@@ -18,6 +18,35 @@ const userSchema = new Schema(
       require: true,
       minLength: 6,
     },
+    avatar: String,
+    registerDate: {
+      type: Date,
+      default: new Date(),
+    },
+    ownRecipes: {
+      type: Date,
+      default: new Date(),
+    },
+    favorite: {
+      type: [String],
+    },
+    shoppingList: [
+      {
+        ingredientID: String,
+        number: Number,
+      },
+    ],
+    theme: {
+      type: String,
+      default: "light",
+      enum: ["light", "dark"],
+    },
+    subscribe: {
+      type: Boolean,
+      default: false,
+    },
+    verificationCode: String,
+    token: String,
   },
   { versionKey: false, timestamps: false }
 );
