@@ -3,10 +3,10 @@ import { ctrl } from "../controllers/auth.js";
 import { validateBody } from "../middlewares/index.js";
 import { schemas } from "../models/favorite.js";
 
-export const faviriteRouter = express.Router();
+export const favoriteRouter = express.Router();
 
-faviriteRouter.post("/add", validateBody(schemas.addSchema), ctrl.register);
+favoriteRouter.post("/add", validateBody(schemas.addSchema), ctrl.register);
 
-faviriteRouter.get("/get", ctrl.getCurrent);
+favoriteRouter.get("/get", ctrl.getCurrent);
 
-faviriteRouter.post("/remove", validateBody(schemas.removeSchema), ctrl.login);
+favoriteRouter.post("/remove", validateBody(schemas.removeSchema), ctrl.login);
