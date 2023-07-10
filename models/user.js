@@ -50,7 +50,7 @@ const userSchema = new Schema(
       default: false,
     },
     verificationCode: String,
-    token: String,
+    token: { type: String, default: "" },
   },
   { versionKey: false, timestamps: false }
 );
