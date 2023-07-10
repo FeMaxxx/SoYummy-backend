@@ -9,6 +9,7 @@ import { authenticate } from "./middlewares/index.js";
 import { authRouter } from "./routes/index.js";
 import { favoriteRouter } from "./routes/favorite.js";
 import { subscribeRouter } from "./routes/subscribe.js";
+import { usersRouter } from "./routes/users.js";
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/auth", authRouter);
+app.use("/api/users", authenticate, usersRouter);
 app.use("/api/favirite", authenticate, favoriteRouter);
 app.use("/api/subscribe", subscribeRouter);
 

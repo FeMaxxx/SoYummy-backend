@@ -7,10 +7,7 @@ const emailRegexp =
 
 const userSchema = new Schema(
   {
-    name: {
-      type: String,
-      require: true,
-    },
+    name: { type: String, require: true },
     email: {
       type: String,
       require: true,
@@ -22,34 +19,17 @@ const userSchema = new Schema(
       require: true,
       minLength: 6,
     },
-    avatar: String,
-    registerDate: {
-      type: Date,
-      default: new Date(),
-    },
-    ownRecipes: {
-      type: Date,
-      default: new Date(),
-    },
-    favorite: {
-      type: [String],
-    },
-    shoppingList: [
-      {
-        ingredientID: String,
-        number: Number,
-      },
-    ],
+    avatar: { type: String, default: "" },
+    registerDate: { type: Date, default: new Date() },
+    ownRecipes: { type: [String], default: [] },
+    favorite: { type: [String], default: [] },
+    shoppingList: { type: [Object], default: [] },
     theme: {
       type: String,
       default: "light",
       enum: ["light", "dark"],
     },
-    subscribe: {
-      type: Boolean,
-      default: false,
-    },
-    verificationCode: String,
+    subscribe: { type: Boolean, default: false },
     token: { type: String, default: "" },
   },
   { versionKey: false, timestamps: false }
@@ -58,12 +38,18 @@ const userSchema = new Schema(
 userSchema.post("save", handleMongooseError);
 
 const authSchema = Joi.object({
+  name: Joi.string().min(2).required(),
   email: Joi.string().pattern(emailRegexp).required(),
   password: Joi.string().min(6).required(),
+});
+
+const changeNameSchema = Joi.object({
+  name: Joi.string().min(2).required(),
 });
 
 export const User = model("user", userSchema);
 
 export const schemas = {
   authSchema,
+  changeNameSchema,
 };
