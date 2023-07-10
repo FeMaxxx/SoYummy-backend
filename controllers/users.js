@@ -1,6 +1,10 @@
 import { HttpError, ctrlWrapper } from "../helpers/index.js";
 import { User } from "../models/user.js";
 
+const getCurrent = async (req, res) => {
+  res.json(req.user);
+};
+
 const changeName = async (req, res) => {
   const { _id, name } = req.user;
 
@@ -13,11 +17,18 @@ const changeName = async (req, res) => {
   res.status(201).json(user);
 };
 
-const getCurrent = async (req, res) => {
-  res.json(req.user);
+const changeAvatar = async (req, res) => {
+  const { _id } = req.user;
+
+  if (!req.file) throw HttpError(400, "Image is required");
+
+  const user = await User.findByIdAndUpdate(_id, { avatar: req.file.path }, { new: true });
+
+  res.status(200).json(user);
 };
 
 export const ctrl = {
-  changeName: ctrlWrapper(changeName),
   getCurrent: ctrlWrapper(getCurrent),
+  changeName: ctrlWrapper(changeName),
+  changeAvatar: ctrlWrapper(changeAvatar),
 };
