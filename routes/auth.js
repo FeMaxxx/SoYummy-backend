@@ -6,8 +6,8 @@ import { authenticate } from "../middlewares/index.js";
 
 export const authRouter = express.Router();
 
-authRouter.post("/register", validateBody(schemas.authSchema), ctrl.register);
+authRouter.post("/register", validateBody(schemas.registerSchema), ctrl.register);
 
-authRouter.post("/login", validateBody(schemas.authSchema), ctrl.login);
+authRouter.post("/login", validateBody(schemas.loginSchema), ctrl.login);
 
 authRouter.post("/logout", authenticate, ctrl.logout);
