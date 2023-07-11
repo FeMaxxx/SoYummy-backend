@@ -12,6 +12,28 @@ const ingredientSchema = new Schema({
     required: [true, "Ingredient measure is required"],
   },
 });
+const categorySchema = new Schema({
+  category: {
+    type: String,
+    enum: [
+      "Beef",
+      "Breakfast",
+      "Chicken",
+      "Dessert",
+      "Goat",
+      "Lamb",
+      "Miscellaneous",
+      "Pasta",
+      "Pork",
+      "Seafood",
+      "Side",
+      "Starter",
+      "Vegan",
+      "Vegetarian",
+    ],
+    required: [true, "Category is required"],
+  },
+});
 
 const recipeSchema = new Schema(
   {
@@ -90,9 +112,8 @@ const addSchema = Joi.object({
 // });
 
 export const Recipe = model("recipe", recipeSchema);
-
+export const Category = model("category", categorySchema);
 export const schemas = {
   addSchema,
-
   // updateRecipeImgSchema,
 };
