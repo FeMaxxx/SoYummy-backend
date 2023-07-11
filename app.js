@@ -6,7 +6,7 @@ import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./swagger.json" assert { type: "json" };
 import { authenticate } from "./middlewares/index.js";
 
-import { authRouter } from "./routes/index.js";
+import { authRouter, ingredientRouter, recipeRouter } from "./routes/index.js";
 import { favoriteRouter } from "./routes/favorite.js";
 import { subscribeRouter } from "./routes/subscribe.js";
 import { usersRouter } from "./routes/users.js";
@@ -25,6 +25,8 @@ app.use("/api/auth", authRouter);
 app.use("/api/users", authenticate, usersRouter);
 app.use("/api/favirite", authenticate, favoriteRouter);
 app.use("/api/subscribe", subscribeRouter);
+app.use("/api/recipes", authenticate, recipeRouter);
+app.use("/api/ingredients", authenticate, ingredientRouter);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
