@@ -7,7 +7,10 @@
   },
   "consumes": ["application/json"],
   "produces": ["application/json"],
-  "servers": [{ "url": "http://localhost:3000" }],
+  "servers": [
+    { "url": "http://localhost:3000" },
+    { "url": "https://soyummy-backend-kmc6.onrender.com/" }
+  ],
   "tags": [
     {
       "name": "Auth",
