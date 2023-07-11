@@ -5,8 +5,8 @@ import { schemas } from "../models/favorite.js";
 
 export const favoriteRouter = express.Router();
 
-favoriteRouter.post("/add", validateBody(schemas.addSchema), ctrl.add);
+favoriteRouter.post("/", validateBody(schemas.addSchema), ctrl.add);
 
-favoriteRouter.get("/get", ctrl.get);
+favoriteRouter.get("/", ctrl.get);
 
-favoriteRouter.post("/remove", validateBody(schemas.removeSchema), ctrl.remove);
+favoriteRouter.delete("/", validateBody(schemas.removeSchema), ctrl.remove);

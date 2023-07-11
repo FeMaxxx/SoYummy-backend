@@ -9,9 +9,8 @@ const { SECRET_KEY } = process.env;
 
 const register = async (req, res) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ email });
-
-  if (user) {
+  const findUser = await User.findOne({ email });
+  if (findUser) {
     throw HttpError(409, "Email already in use");
   }
 
@@ -19,37 +18,27 @@ const register = async (req, res) => {
   const newUser = await User.create({ ...req.body, password: hashPassword });
   const { _id } = newUser;
   const token = jwt.sign({ id: _id }, SECRET_KEY, { expiresIn: "10h" });
-  await User.findByIdAndUpdate(_id, { token });
+  const user = await User.findByIdAndUpdate(_id, { token }, { new: true });
 
-  res.status(201).json({
-    token: `Bearer ${token}`,
-    user: {
-      email,
-    },
-  });
+  res.status(201).json({ password, ...user.toJSON() });
 };
 
 const login = async (req, res) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ email });
-  if (!user) {
+  const findUser = await User.findOne({ email });
+  if (!findUser) {
     throw HttpError(401, "Email or password invalid");
   }
 
-  const passwordCompare = await bcrypt.compare(password, user.password);
+  const passwordCompare = await bcrypt.compare(password, findUser.password);
   if (!passwordCompare) {
     throw HttpError(401, "Email or password invalid");
   }
 
-  const token = jwt.sign({ id: user._id }, SECRET_KEY, { expiresIn: "10h" });
-  await User.findByIdAndUpdate(user._id, { token });
+  const token = jwt.sign({ id: findUser._id }, SECRET_KEY, { expiresIn: "10h" });
+  const user = await User.findByIdAndUpdate(findUser._id, { token }, { new: true });
 
-  res.json({
-    token: `Bearer ${token}`,
-    user: {
-      email,
-    },
-  });
+  res.status(201).json({ password, ...user.toJSON() });
 };
 
 const logout = async (req, res) => {
