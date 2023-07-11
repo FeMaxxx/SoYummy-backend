@@ -8,9 +8,18 @@ export const recipeRouter = express.Router();
 
 recipeRouter.get("/", authenticate, ctrl.getRecipes);
 recipeRouter.get("/:recipeId", authenticate, ctrl.getRecipeById);
+recipeRouter.get("/search/:title", authenticate, ctrl.getRecipesByTitle);
 recipeRouter.get("/category-list", authenticate, ctrl.getCategoryList);
-recipeRouter.get("/:category", authenticate, ctrl.getRecipesByCategory);
-recipeRouter.get("/:ingredientId", authenticate, ctrl.getRecipesByIngredient);
+recipeRouter.get(
+  "/categories/:category",
+  authenticate,
+  ctrl.getRecipesByCategory
+);
+recipeRouter.get(
+  "/ingredients/:ingredientId",
+  authenticate,
+  ctrl.getRecipesByIngredient
+);
 recipeRouter.post(
   "/",
   validateBody(schemas.addSchema),

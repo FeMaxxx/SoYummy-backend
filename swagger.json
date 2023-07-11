@@ -21,10 +21,6 @@
       "description": "Recipes endpoints"
     },
     {
-      "name": "Search titles",
-      "description": "Search endpoints"
-    },
-    {
       "name": "Search ingredients",
       "description": "Ingredients endpoints"
     },
@@ -126,7 +122,32 @@
         }
       }
     },
-
+    "/api/auth/logout": {
+      "post": {
+        "summary": "User's logout",
+        "tags": ["Auth"],
+        "parameters": [
+          {
+            "name": "Authorization Token",
+            "in": "header",
+            "description": "Bearer authorization token",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YThmNGQ2ZTI0YjNlNDJmNzg5MDgyNyIsImlhdCI6MTY4ODg5NjUyNywiZXhwIjoxNjg4OTMyNTI3fQ.43qk7STIlTK8DRgoBu6wwaMmaVAWe0C8dX0aZ4LG3hU"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful logout"
+          },
+          "401": {
+            "description": "Problem with authorization"
+          }
+        }
+      }
+    },
     "/api/recipes": {
       "get": {
         "summary": "Get all recipes",
@@ -205,12 +226,193 @@
             "description": "Validation error (missing fields in body)"
           }
         }
+      },
+      "delete": {
+        "summary": "Delete recipe",
+        "tags": ["Recipes"],
+        "parameters": [
+          {
+            "name": "Authorization Token",
+            "in": "header",
+            "description": "User authorization token",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OTQyYjI4MzEyY2YzYWJlYTExNjMzNCIsImlhdCI6MTY4NzQzMjM1MSwiZXhwIjoxNjg3NTE4NzUxfQ.DCEB2Q0lghWYieYxiZohu4uMMpwMYFa55XOqMgggVVg"
+            }
+          },
+          {
+            "name": "recipeId",
+            "in": "path",
+            "description": "Recipe ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "649885bb8cfd32ed13fd42d3"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful delete",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "example": "Recipe deleted"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem with Authorization missing header, invalid token"
+          },
+          "404": {
+            "description": "Recipe id (from params) not found"
+          }
+        }
       }
     },
-    "/api/recipes/{ingredient}": {
+    "/api/recipes/ingredients/{ingredientId}": {
       "get": {
-        "summary": "Get recipes by category",
+        "summary": "Get recipes with this ingredientId",
         "tags": ["Recipes"],
+        "parameters": [
+          {
+            "name": "Authorization Token",
+            "in": "header",
+            "description": "User authorization token",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YThmNGQ2ZTI0YjNlNDJmNzg5MDgyNyIsImlhdCI6MTY4ODg5NjUyNywiZXhwIjoxNjg4OTMyNTI3fQ.43qk7STIlTK8DRgoBu6wwaMmaVAWe0C8dX0aZ4LG3hU"
+            }
+          },
+          {
+            "name": "ingredientId",
+            "in": "path",
+            "description": "Ingredient ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "649885bb8cfd32ed13fd42d3"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "$ref": "#/components/schemas/RecipesByIngredient"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem with Authorization missing header, invalid token"
+          }
+        }
+      }
+    },
+    "/api/recipes/categories/{category}": {
+      "get": {
+        "summary": "Get recipes by this category",
+        "tags": ["Recipes"],
+        "parameters": [
+          {
+            "name": "Authorization Token",
+            "in": "header",
+            "description": "User authorization token",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YThmNGQ2ZTI0YjNlNDJmNzg5MDgyNyIsImlhdCI6MTY4ODg5NjUyNywiZXhwIjoxNjg4OTMyNTI3fQ.43qk7STIlTK8DRgoBu6wwaMmaVAWe0C8dX0aZ4LG3hU"
+            }
+          },
+          {
+            "name": "Category name",
+            "in": "path",
+            "description": "Category name",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Beef"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "$ref": "#/components/schemas/RecipesByCategoryResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem with Authorization missing header, invalid token"
+          }
+        }
+      }
+    },
+    "/api/recipes/search/{title}": {
+      "get": {
+        "summary": "Get recipes by this title",
+        "tags": ["Recipes"],
+        "parameters": [
+          {
+            "name": "Authorization Token",
+            "in": "header",
+            "description": "User authorization token",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YThmNGQ2ZTI0YjNlNDJmNzg5MDgyNyIsImlhdCI6MTY4ODg5NjUyNywiZXhwIjoxNjg4OTMyNTI3fQ.43qk7STIlTK8DRgoBu6wwaMmaVAWe0C8dX0aZ4LG3hU"
+            }
+          },
+          {
+            "name": "Title",
+            "in": "path",
+            "description": "Title",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Honey"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "$ref": "#/components/schemas/RecipesByTitleResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem with Authorization missing header, invalid token"
+          }
+        }
+      }
+    },
+    "/api/ingredients": {
+      "get": {
+        "summary": "Get all ingredients",
+        "tags": ["Search ingredients"],
         "parameters": [
           {
             "name": "Authorization Token",
@@ -230,7 +432,7 @@
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "$ref": "#/components/schemas/RecipesByCategory"
+                  "$ref": "#/components/schemas/AllIngredients"
                 }
               }
             }
@@ -394,291 +596,6 @@
         }
       },
       "AllRecipes": {
-        "type": "array",
-        "items": {
-          "properties": {
-            "_id": {
-              "type": "string",
-              "description": "Recipe Id",
-              "example": "558rrp6683b8a7c4d2e"
-            },
-            "title": {
-              "type": "string",
-              "description": "Recipe title",
-              "example": "Rigatoni with fennel sausage sauce"
-            },
-            "thumb": {
-              "type": "string",
-              "description": "Recipe photo",
-              "example": "https://www.themealdb.com/images/media/meals/qtqvys1468573168.jpg"
-            },
-            "category": {
-              "type": "string",
-              "description": "Category of the recipe",
-              "example": "Lamb"
-            },
-            "instructions": {
-              "type": "string",
-              "description": "Instructions for the dish cooking",
-              "example": "Heat a tablespoon of oil in a large saute pan for which you have a lid…"
-            },
-            "description": {
-              "type": "string",
-              "description": "Description of the dish",
-              "example": "An Italian pasta dish made with rigatoni and a sauce"
-            },
-            "time": {
-              "type": "string",
-              "description": "Preparation time",
-              "example": "75"
-            },
-            "ingredients": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "description": "Ingredient Id",
-                    "example": "640c2dd963a319ea671e372c"
-                  },
-                  "name": {
-                    "type": "string",
-                    "description": "Ingredient name",
-                    "example": "Cucumber"
-                  },
-                  "measure": {
-                    "type": "string",
-                    "description": "The measure of the ingredient",
-                    "example": "1"
-                  }
-                }
-              }
-            }
-          },
-          "example": {
-            "example1": {
-              "value": [
-                {
-                  "_id": "6462a8f74c3d0ddd288980c2",
-                  "title": "Snert (Dutch Split Pea Soup)",
-                  "category": "Side",
-                  "instructions": "Gather the ingredients.\r\n\r\nIn a large soup pot, bring water, split peas, pork belly or bacon, pork chop, and bouillon cube to a boil. Reduce the heat to a simmer, cover and let cook for 45 minutes, stirring occasionally and skimming off any foam that rises to the top. \r\n\r\nRemove the pork chop, debone, and thinly slice the meat. Set aside.\r\n\r\nAdd the celery, carrots, potato, onion, leek, and celeriac to the soup. Return to the boil, reduce the heat to a simmer and let cook, uncovered, for another 30 minutes, adding a little extra water if the ingredients start to stick to the bottom of the pot.\r\n\r\nAdd the smoked sausage for the last 15 minutes of cooking time. When the vegetables are tender, remove the bacon and smoked sausage, slice thinly and set aside.\r\n\r\nIf you prefer a smooth consistency, purée the soup with a stick blender. Season to taste with salt and pepper. Add the meat back to the soup, setting some slices of rookworst aside.\r\n\r\nServe in heated bowls or soup plates, garnished with slices of rookworst and chopped celery leaf.\r\n\r\nEnjoy!",
-                  "description": "A hearty Dutch soup made with split peas, vegetables, and pork or sausage, often served with rye bread and cheese.",
-                  "thumb": "https://www.themealdb.com/images/media/meals/9ptx0a1565090843.jpg",
-                  "time": "90",
-                  "ingredients": [
-                    {
-                      "_id": "64ac11030b04264e7f7ed18a",
-                      "id": "640c2dd963a319ea671e378f",
-                      "measure": "2L"
-                    },
-                    {
-                      "_id": "64ac11030b04264e7f7ed18b",
-                      "id": "640c2dd963a319ea671e373c",
-                      "measure": "300g"
-                    },
-                    {
-                      "_id": "64ac11030b04264e7f7ed18c",
-                      "id": "640c2dd963a319ea671e365e",
-                      "measure": "100g "
-                    },
-                    {
-                      "_id": "64ac11030b04264e7f7ed18d",
-                      "id": "640c2dd963a319ea671e378b",
-                      "measure": "1"
-                    },
-                    {
-                      "_id": "64ac11030b04264e7f7ed18e",
-                      "id": "640c2dd963a319ea671e368a",
-                      "measure": "2"
-                    },
-                    {
-                      "_id": "64ac11030b04264e7f7ed18f",
-                      "id": "640c2dd963a319ea671e3684",
-                      "measure": "2"
-                    },
-                    {
-                      "_id": "64ac11030b04264e7f7ed190",
-                      "id": "640c2dd963a319ea671e3746",
-                      "measure": "1 large"
-                    },
-                    {
-                      "_id": "64ac11030b04264e7f7ed191",
-                      "id": "640c2dd963a319ea671e37ae",
-                      "measure": "1 small"
-                    },
-                    {
-                      "_id": "64ac11030b04264e7f7ed192",
-                      "id": "640c2dd963a319ea671e3710",
-                      "measure": "1 small"
-                    },
-                    {
-                      "_id": "64ac11030b04264e7f7ed193",
-                      "id": "640c2dd963a319ea671e3689",
-                      "measure": "1 cup "
-                    },
-                    {
-                      "_id": "64ac11030b04264e7f7ed194",
-                      "id": "640c2dd963a319ea671e3760",
-                      "measure": "1 pound"
-                    }
-                  ]
-                },
-                {
-                  "_id": "6462a8f74c3d0ddd288980c9",
-                  "title": "Oxtail with broad beans",
-                  "category": "Beef",
-                  "instructions": "Toss the oxtail with the onion, spring onion, garlic, ginger, chilli, soy sauce, thyme, salt and pepper. Heat the vegetable oil in a large frying pan over medium-high heat. Brown the oxtail in the pan until browned all over, about 10 minutes. Place into a pressure cooker, and pour in 375ml water. Cook at pressure for 25 minutes, then remove from heat, and remove the lid according to manufacturer's directions.\r\nAdd the broad beans and pimento berries, and bring to a simmer over medium-high heat. Dissolve the cornflour in 2 tablespoons water, and stir into the simmering oxtail. Cook and stir a few minutes until the sauce has thickened, and the broad beans are tender.",
-                  "description": "Tender oxtail cooked with broad beans, carrots, and other vegetables in a savory sauce. Served with rice and plantains.",
-                  "thumb": "https://www.themealdb.com/images/media/meals/1520083578.jpg",
-                  "time": "35",
-                  "ingredients": [
-                    {
-                      "_id": "64ac11030b04264e7f7ed195",
-                      "id": "640c2dd963a319ea671e3841",
-                      "measure": "450g"
-                    },
-                    {
-                      "_id": "64ac11030b04264e7f7ed196",
-                      "id": "640c2dd963a319ea671e37ae",
-                      "measure": "1 chopped"
-                    },
-                    {
-                      "_id": "64ac11030b04264e7f7ed197",
-                      "id": "640c2dd963a319ea671e3770",
-                      "measure": "1"
-                    },
-                    {
-                      "_id": "64ac11030b04264e7f7ed198",
-                      "id": "640c2dd963a319ea671e36e3",
-                      "measure": "2 cloves minced"
-                    },
-                    {
-                      "_id": "64ac11030b04264e7f7ed199",
-                      "id": "640c2dd963a319ea671e36e8",
-                      "measure": "1 tsp "
-                    },
-                    {
-                      "_id": "64ac11030b04264e7f7ed19a",
-                      "id": "640c2dd963a319ea671e3840",
-                      "measure": "1 chopped"
-                    },
-                    {
-                      "_id": "64ac11030b04264e7f7ed19b",
-                      "id": "640c2dd963a319ea671e376c",
-                      "measure": "2 tbs"
-                    },
-                    {
-                      "_id": "64ac11030b04264e7f7ed19c",
-                      "id": "640c2dd963a319ea671e36de",
-                      "measure": "1 chopped"
-                    },
-                    {
-                      "_id": "64ac11030b04264e7f7ed19d",
-                      "id": "640c2dd963a319ea671e3789",
-                      "measure": "2 tbs"
-                    },
-                    {
-                      "_id": "64ac11030b04264e7f7ed19e",
-                      "id": "640c2dd963a319ea671e378f",
-                      "measure": "350ml"
-                    },
-                    {
-                      "_id": "64ac11030b04264e7f7ed19f",
-                      "id": "640c2dd963a319ea671e3842",
-                      "measure": "200g"
-                    },
-                    {
-                      "_id": "64ac11030b04264e7f7ed1a0",
-                      "id": "640c2dd963a319ea671e37a4",
-                      "measure": "1 tbs"
-                    }
-                  ]
-                }
-              ]
-            }
-          }
-        }
-      },
-      "AddingNewRecipeRequest": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string",
-            "description": "Recipe title",
-            "example": "Rigatoni with fennel sausage sauce"
-          },
-          "thumb": {
-            "type": "string",
-            "description": "Recipe photo",
-            "example": "https://www.themealdb.com/images/media/meals/qtqvys1468573168.jpg"
-          },
-          "category": {
-            "type": "string",
-            "description": "Category of the recipe",
-            "example": "Lamb"
-          },
-          "instructions": {
-            "type": "string",
-            "description": "Instructions for the dish cooking",
-            "example": "Heat a tablespoon of oil in a large saute pan for which you have a lid…"
-          },
-          "description": {
-            "type": "string",
-            "description": "Description of the dish",
-            "example": "An Italian pasta dish made with rigatoni and a sauce"
-          },
-          "time": {
-            "type": "string",
-            "description": "Preparation time",
-            "example": "75"
-          },
-          "ingredients": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string",
-                  "description": "Ingredient Id",
-                  "example": "640c2dd963a319ea671e372c"
-                },
-                "name": {
-                  "type": "string",
-                  "description": "Ingredient name",
-                  "example": "Cucumber"
-                },
-                "measure": {
-                  "type": "string",
-                  "description": "The measure of the ingredient",
-                  "example": "1"
-                }
-              }
-            }
-          }
-        },
-        "required": [
-          "title",
-          "thumb",
-          "category",
-          "instructions",
-          "description",
-          "time",
-          "ingredients"
-        ]
-      },
-      "AddingNewRecipeResponse": {
-        "type": "object",
-        "properties": {
-          "_id": {
-            "type": "string",
-            "description": "Recipe ID (generated by backend)",
-            "example": "640c2dd963a319ea671e372c"
-          }
-        }
-      },
-      "RecipesByCategory": {
         "type": "array",
         "items": {
           "properties": {
@@ -896,6 +813,816 @@
                       "measure": "1 tbs"
                     }
                   ]
+                }
+              ]
+            }
+          }
+        }
+      },
+      "AddingNewRecipeRequest": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Recipe title",
+            "example": "Rigatoni with fennel sausage sauce"
+          },
+          "thumb": {
+            "type": "string",
+            "description": "Recipe photo",
+            "example": "https://www.themealdb.com/images/media/meals/qtqvys1468573168.jpg"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "Beef",
+              "Breakfast",
+              "Chicken",
+              "Dessert",
+              "Goat",
+              "Lamb",
+              "Miscellaneous",
+              "Pasta",
+              "Pork",
+              "Seafood",
+              "Side",
+              "Starter",
+              "Vegan",
+              "Vegetarian"
+            ],
+            "description": "Category of the recipe",
+            "example": "Lamb"
+          },
+          "instructions": {
+            "type": "string",
+            "description": "Instructions for the dish cooking",
+            "example": "Heat a tablespoon of oil in a large saute pan for which you have a lid…"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the dish",
+            "example": "An Italian pasta dish made with rigatoni and a sauce"
+          },
+          "time": {
+            "type": "string",
+            "description": "Preparation time",
+            "example": "75"
+          },
+          "ingredients": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Ingredient Id",
+                  "example": "640c2dd963a319ea671e372c"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Ingredient name",
+                  "example": "Cucumber"
+                },
+                "measure": {
+                  "type": "string",
+                  "description": "The measure of the ingredient",
+                  "example": "1"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "title",
+          "thumb",
+          "category",
+          "instructions",
+          "description",
+          "time",
+          "ingredients"
+        ]
+      },
+      "AddingNewRecipeResponse": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Recipe ID (generated by backend)",
+            "example": "640c2dd963a319ea671e372c"
+          }
+        }
+      },
+      "RecipesByTitleResponse": {
+        "type": "array",
+        "items": {
+          "properties": {
+            "_id": {
+              "type": "string",
+              "description": "Recipe Id",
+              "example": "558rrp6683b8a7c4d2e"
+            },
+            "title": {
+              "type": "string",
+              "description": "Recipe title",
+              "example": "Rigatoni with fennel sausage sauce"
+            },
+            "thumb": {
+              "type": "string",
+              "description": "Recipe photo",
+              "example": "https://www.themealdb.com/images/media/meals/qtqvys1468573168.jpg"
+            },
+            "category": {
+              "type": "string",
+              "enum": [
+                "Beef",
+                "Breakfast",
+                "Chicken",
+                "Dessert",
+                "Goat",
+                "Lamb",
+                "Miscellaneous",
+                "Pasta",
+                "Pork",
+                "Seafood",
+                "Side",
+                "Starter",
+                "Vegan",
+                "Vegetarian"
+              ],
+              "description": "Category of the recipe",
+              "example": "Lamb"
+            },
+            "instructions": {
+              "type": "string",
+              "description": "Instructions for the dish cooking",
+              "example": "Heat a tablespoon of oil in a large saute pan for which you have a lid…"
+            },
+            "description": {
+              "type": "string",
+              "description": "Description of the dish",
+              "example": "An Italian pasta dish made with rigatoni and a sauce"
+            },
+            "time": {
+              "type": "string",
+              "description": "Preparation time",
+              "example": "75"
+            },
+            "ingredients": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Ingredient Id",
+                    "example": "640c2dd963a319ea671e372c"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Ingredient name",
+                    "example": "Cucumber"
+                  },
+                  "measure": {
+                    "type": "string",
+                    "description": "The measure of the ingredient",
+                    "example": "1"
+                  }
+                }
+              }
+            }
+          },
+          "example": {
+            "example1": {
+              "value": [
+                {
+                  "_id": "6462a8f74c3d0ddd288980c2",
+                  "title": "Snert (Dutch Split Pea Soup)",
+                  "category": "Side",
+                  "instructions": "Gather the ingredients.\r\n\r\nIn a large soup pot, bring water, split peas, pork belly or bacon, pork chop, and bouillon cube to a boil. Reduce the heat to a simmer, cover and let cook for 45 minutes, stirring occasionally and skimming off any foam that rises to the top. \r\n\r\nRemove the pork chop, debone, and thinly slice the meat. Set aside.\r\n\r\nAdd the celery, carrots, potato, onion, leek, and celeriac to the soup. Return to the boil, reduce the heat to a simmer and let cook, uncovered, for another 30 minutes, adding a little extra water if the ingredients start to stick to the bottom of the pot.\r\n\r\nAdd the smoked sausage for the last 15 minutes of cooking time. When the vegetables are tender, remove the bacon and smoked sausage, slice thinly and set aside.\r\n\r\nIf you prefer a smooth consistency, purée the soup with a stick blender. Season to taste with salt and pepper. Add the meat back to the soup, setting some slices of rookworst aside.\r\n\r\nServe in heated bowls or soup plates, garnished with slices of rookworst and chopped celery leaf.\r\n\r\nEnjoy!",
+                  "description": "A hearty Dutch soup made with split peas, vegetables, and pork or sausage, often served with rye bread and cheese.",
+                  "thumb": "https://www.themealdb.com/images/media/meals/9ptx0a1565090843.jpg",
+                  "time": "90",
+                  "ingredients": [
+                    {
+                      "_id": "64ac11030b04264e7f7ed18a",
+                      "id": "640c2dd963a319ea671e378f",
+                      "measure": "2L"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed18b",
+                      "id": "640c2dd963a319ea671e373c",
+                      "measure": "300g"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed18c",
+                      "id": "640c2dd963a319ea671e365e",
+                      "measure": "100g "
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed18d",
+                      "id": "640c2dd963a319ea671e378b",
+                      "measure": "1"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed18e",
+                      "id": "640c2dd963a319ea671e368a",
+                      "measure": "2"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed18f",
+                      "id": "640c2dd963a319ea671e3684",
+                      "measure": "2"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed190",
+                      "id": "640c2dd963a319ea671e3746",
+                      "measure": "1 large"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed191",
+                      "id": "640c2dd963a319ea671e37ae",
+                      "measure": "1 small"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed192",
+                      "id": "640c2dd963a319ea671e3710",
+                      "measure": "1 small"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed193",
+                      "id": "640c2dd963a319ea671e3689",
+                      "measure": "1 cup "
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed194",
+                      "id": "640c2dd963a319ea671e3760",
+                      "measure": "1 pound"
+                    }
+                  ]
+                },
+                {
+                  "_id": "6462a8f74c3d0ddd288980c9",
+                  "title": "Oxtail with broad beans",
+                  "category": "Beef",
+                  "instructions": "Toss the oxtail with the onion, spring onion, garlic, ginger, chilli, soy sauce, thyme, salt and pepper. Heat the vegetable oil in a large frying pan over medium-high heat. Brown the oxtail in the pan until browned all over, about 10 minutes. Place into a pressure cooker, and pour in 375ml water. Cook at pressure for 25 minutes, then remove from heat, and remove the lid according to manufacturer's directions.\r\nAdd the broad beans and pimento berries, and bring to a simmer over medium-high heat. Dissolve the cornflour in 2 tablespoons water, and stir into the simmering oxtail. Cook and stir a few minutes until the sauce has thickened, and the broad beans are tender.",
+                  "description": "Tender oxtail cooked with broad beans, carrots, and other vegetables in a savory sauce. Served with rice and plantains.",
+                  "thumb": "https://www.themealdb.com/images/media/meals/1520083578.jpg",
+                  "time": "35",
+                  "ingredients": [
+                    {
+                      "_id": "64ac11030b04264e7f7ed195",
+                      "id": "640c2dd963a319ea671e3841",
+                      "measure": "450g"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed196",
+                      "id": "640c2dd963a319ea671e37ae",
+                      "measure": "1 chopped"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed197",
+                      "id": "640c2dd963a319ea671e3770",
+                      "measure": "1"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed198",
+                      "id": "640c2dd963a319ea671e36e3",
+                      "measure": "2 cloves minced"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed199",
+                      "id": "640c2dd963a319ea671e36e8",
+                      "measure": "1 tsp "
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed19a",
+                      "id": "640c2dd963a319ea671e3840",
+                      "measure": "1 chopped"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed19b",
+                      "id": "640c2dd963a319ea671e376c",
+                      "measure": "2 tbs"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed19c",
+                      "id": "640c2dd963a319ea671e36de",
+                      "measure": "1 chopped"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed19d",
+                      "id": "640c2dd963a319ea671e3789",
+                      "measure": "2 tbs"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed19e",
+                      "id": "640c2dd963a319ea671e378f",
+                      "measure": "350ml"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed19f",
+                      "id": "640c2dd963a319ea671e3842",
+                      "measure": "200g"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed1a0",
+                      "id": "640c2dd963a319ea671e37a4",
+                      "measure": "1 tbs"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      },
+      "RecipesByCategoryResponse": {
+        "type": "array",
+        "items": {
+          "properties": {
+            "_id": {
+              "type": "string",
+              "description": "Recipe Id",
+              "example": "558rrp6683b8a7c4d2e"
+            },
+            "title": {
+              "type": "string",
+              "description": "Recipe title",
+              "example": "Rigatoni with fennel sausage sauce"
+            },
+            "thumb": {
+              "type": "string",
+              "description": "Recipe photo",
+              "example": "https://www.themealdb.com/images/media/meals/qtqvys1468573168.jpg"
+            },
+            "category": {
+              "type": "string",
+              "enum": [
+                "Beef",
+                "Breakfast",
+                "Chicken",
+                "Dessert",
+                "Goat",
+                "Lamb",
+                "Miscellaneous",
+                "Pasta",
+                "Pork",
+                "Seafood",
+                "Side",
+                "Starter",
+                "Vegan",
+                "Vegetarian"
+              ],
+              "description": "Category of the recipe",
+              "example": "Lamb"
+            },
+            "instructions": {
+              "type": "string",
+              "description": "Instructions for the dish cooking",
+              "example": "Heat a tablespoon of oil in a large saute pan for which you have a lid…"
+            },
+            "description": {
+              "type": "string",
+              "description": "Description of the dish",
+              "example": "An Italian pasta dish made with rigatoni and a sauce"
+            },
+            "time": {
+              "type": "string",
+              "description": "Preparation time",
+              "example": "75"
+            },
+            "ingredients": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Ingredient Id",
+                    "example": "640c2dd963a319ea671e372c"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Ingredient name",
+                    "example": "Cucumber"
+                  },
+                  "measure": {
+                    "type": "string",
+                    "description": "The measure of the ingredient",
+                    "example": "1"
+                  }
+                }
+              }
+            }
+          },
+          "example": {
+            "example1": {
+              "value": [
+                {
+                  "_id": "6462a8f74c3d0ddd288980c2",
+                  "title": "Snert (Dutch Split Pea Soup)",
+                  "category": "Side",
+                  "instructions": "Gather the ingredients.\r\n\r\nIn a large soup pot, bring water, split peas, pork belly or bacon, pork chop, and bouillon cube to a boil. Reduce the heat to a simmer, cover and let cook for 45 minutes, stirring occasionally and skimming off any foam that rises to the top. \r\n\r\nRemove the pork chop, debone, and thinly slice the meat. Set aside.\r\n\r\nAdd the celery, carrots, potato, onion, leek, and celeriac to the soup. Return to the boil, reduce the heat to a simmer and let cook, uncovered, for another 30 minutes, adding a little extra water if the ingredients start to stick to the bottom of the pot.\r\n\r\nAdd the smoked sausage for the last 15 minutes of cooking time. When the vegetables are tender, remove the bacon and smoked sausage, slice thinly and set aside.\r\n\r\nIf you prefer a smooth consistency, purée the soup with a stick blender. Season to taste with salt and pepper. Add the meat back to the soup, setting some slices of rookworst aside.\r\n\r\nServe in heated bowls or soup plates, garnished with slices of rookworst and chopped celery leaf.\r\n\r\nEnjoy!",
+                  "description": "A hearty Dutch soup made with split peas, vegetables, and pork or sausage, often served with rye bread and cheese.",
+                  "thumb": "https://www.themealdb.com/images/media/meals/9ptx0a1565090843.jpg",
+                  "time": "90",
+                  "ingredients": [
+                    {
+                      "_id": "64ac11030b04264e7f7ed18a",
+                      "id": "640c2dd963a319ea671e378f",
+                      "measure": "2L"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed18b",
+                      "id": "640c2dd963a319ea671e373c",
+                      "measure": "300g"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed18c",
+                      "id": "640c2dd963a319ea671e365e",
+                      "measure": "100g "
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed18d",
+                      "id": "640c2dd963a319ea671e378b",
+                      "measure": "1"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed18e",
+                      "id": "640c2dd963a319ea671e368a",
+                      "measure": "2"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed18f",
+                      "id": "640c2dd963a319ea671e3684",
+                      "measure": "2"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed190",
+                      "id": "640c2dd963a319ea671e3746",
+                      "measure": "1 large"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed191",
+                      "id": "640c2dd963a319ea671e37ae",
+                      "measure": "1 small"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed192",
+                      "id": "640c2dd963a319ea671e3710",
+                      "measure": "1 small"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed193",
+                      "id": "640c2dd963a319ea671e3689",
+                      "measure": "1 cup "
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed194",
+                      "id": "640c2dd963a319ea671e3760",
+                      "measure": "1 pound"
+                    }
+                  ]
+                },
+                {
+                  "_id": "6462a8f74c3d0ddd288980c9",
+                  "title": "Oxtail with broad beans",
+                  "category": "Beef",
+                  "instructions": "Toss the oxtail with the onion, spring onion, garlic, ginger, chilli, soy sauce, thyme, salt and pepper. Heat the vegetable oil in a large frying pan over medium-high heat. Brown the oxtail in the pan until browned all over, about 10 minutes. Place into a pressure cooker, and pour in 375ml water. Cook at pressure for 25 minutes, then remove from heat, and remove the lid according to manufacturer's directions.\r\nAdd the broad beans and pimento berries, and bring to a simmer over medium-high heat. Dissolve the cornflour in 2 tablespoons water, and stir into the simmering oxtail. Cook and stir a few minutes until the sauce has thickened, and the broad beans are tender.",
+                  "description": "Tender oxtail cooked with broad beans, carrots, and other vegetables in a savory sauce. Served with rice and plantains.",
+                  "thumb": "https://www.themealdb.com/images/media/meals/1520083578.jpg",
+                  "time": "35",
+                  "ingredients": [
+                    {
+                      "_id": "64ac11030b04264e7f7ed195",
+                      "id": "640c2dd963a319ea671e3841",
+                      "measure": "450g"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed196",
+                      "id": "640c2dd963a319ea671e37ae",
+                      "measure": "1 chopped"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed197",
+                      "id": "640c2dd963a319ea671e3770",
+                      "measure": "1"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed198",
+                      "id": "640c2dd963a319ea671e36e3",
+                      "measure": "2 cloves minced"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed199",
+                      "id": "640c2dd963a319ea671e36e8",
+                      "measure": "1 tsp "
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed19a",
+                      "id": "640c2dd963a319ea671e3840",
+                      "measure": "1 chopped"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed19b",
+                      "id": "640c2dd963a319ea671e376c",
+                      "measure": "2 tbs"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed19c",
+                      "id": "640c2dd963a319ea671e36de",
+                      "measure": "1 chopped"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed19d",
+                      "id": "640c2dd963a319ea671e3789",
+                      "measure": "2 tbs"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed19e",
+                      "id": "640c2dd963a319ea671e378f",
+                      "measure": "350ml"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed19f",
+                      "id": "640c2dd963a319ea671e3842",
+                      "measure": "200g"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed1a0",
+                      "id": "640c2dd963a319ea671e37a4",
+                      "measure": "1 tbs"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      },
+      "RecipesByIngredient": {
+        "type": "array",
+        "items": {
+          "properties": {
+            "_id": {
+              "type": "string",
+              "description": "Recipe Id",
+              "example": "558rrp6683b8a7c4d2e"
+            },
+            "title": {
+              "type": "string",
+              "description": "Recipe title",
+              "example": "Rigatoni with fennel sausage sauce"
+            },
+            "thumb": {
+              "type": "string",
+              "description": "Recipe photo",
+              "example": "https://www.themealdb.com/images/media/meals/qtqvys1468573168.jpg"
+            },
+            "category": {
+              "type": "string",
+              "enum": [
+                "Beef",
+                "Breakfast",
+                "Chicken",
+                "Dessert",
+                "Goat",
+                "Lamb",
+                "Miscellaneous",
+                "Pasta",
+                "Pork",
+                "Seafood",
+                "Side",
+                "Starter",
+                "Vegan",
+                "Vegetarian"
+              ],
+              "description": "Category of the recipe",
+              "example": "Lamb"
+            },
+            "instructions": {
+              "type": "string",
+              "description": "Instructions for the dish cooking",
+              "example": "Heat a tablespoon of oil in a large saute pan for which you have a lid…"
+            },
+            "description": {
+              "type": "string",
+              "description": "Description of the dish",
+              "example": "An Italian pasta dish made with rigatoni and a sauce"
+            },
+            "time": {
+              "type": "string",
+              "description": "Preparation time",
+              "example": "75"
+            },
+            "ingredients": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Ingredient Id",
+                    "example": "640c2dd963a319ea671e372c"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Ingredient name",
+                    "example": "Cucumber"
+                  },
+                  "measure": {
+                    "type": "string",
+                    "description": "The measure of the ingredient",
+                    "example": "1"
+                  }
+                }
+              }
+            }
+          },
+          "example": {
+            "example1": {
+              "value": [
+                {
+                  "_id": "6462a8f74c3d0ddd288980c2",
+                  "title": "Snert (Dutch Split Pea Soup)",
+                  "category": "Side",
+                  "instructions": "Gather the ingredients.\r\n\r\nIn a large soup pot, bring water, split peas, pork belly or bacon, pork chop, and bouillon cube to a boil. Reduce the heat to a simmer, cover and let cook for 45 minutes, stirring occasionally and skimming off any foam that rises to the top. \r\n\r\nRemove the pork chop, debone, and thinly slice the meat. Set aside.\r\n\r\nAdd the celery, carrots, potato, onion, leek, and celeriac to the soup. Return to the boil, reduce the heat to a simmer and let cook, uncovered, for another 30 minutes, adding a little extra water if the ingredients start to stick to the bottom of the pot.\r\n\r\nAdd the smoked sausage for the last 15 minutes of cooking time. When the vegetables are tender, remove the bacon and smoked sausage, slice thinly and set aside.\r\n\r\nIf you prefer a smooth consistency, purée the soup with a stick blender. Season to taste with salt and pepper. Add the meat back to the soup, setting some slices of rookworst aside.\r\n\r\nServe in heated bowls or soup plates, garnished with slices of rookworst and chopped celery leaf.\r\n\r\nEnjoy!",
+                  "description": "A hearty Dutch soup made with split peas, vegetables, and pork or sausage, often served with rye bread and cheese.",
+                  "thumb": "https://www.themealdb.com/images/media/meals/9ptx0a1565090843.jpg",
+                  "time": "90",
+                  "ingredients": [
+                    {
+                      "_id": "64ac11030b04264e7f7ed18a",
+                      "id": "640c2dd963a319ea671e378f",
+                      "measure": "2L"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed18b",
+                      "id": "640c2dd963a319ea671e373c",
+                      "measure": "300g"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed18c",
+                      "id": "640c2dd963a319ea671e365e",
+                      "measure": "100g "
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed18d",
+                      "id": "640c2dd963a319ea671e378b",
+                      "measure": "1"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed18e",
+                      "id": "640c2dd963a319ea671e368a",
+                      "measure": "2"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed18f",
+                      "id": "640c2dd963a319ea671e3684",
+                      "measure": "2"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed190",
+                      "id": "640c2dd963a319ea671e3746",
+                      "measure": "1 large"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed191",
+                      "id": "640c2dd963a319ea671e37ae",
+                      "measure": "1 small"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed192",
+                      "id": "640c2dd963a319ea671e3710",
+                      "measure": "1 small"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed193",
+                      "id": "640c2dd963a319ea671e3689",
+                      "measure": "1 cup "
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed194",
+                      "id": "640c2dd963a319ea671e3760",
+                      "measure": "1 pound"
+                    }
+                  ]
+                },
+                {
+                  "_id": "6462a8f74c3d0ddd288980c9",
+                  "title": "Oxtail with broad beans",
+                  "category": "Beef",
+                  "instructions": "Toss the oxtail with the onion, spring onion, garlic, ginger, chilli, soy sauce, thyme, salt and pepper. Heat the vegetable oil in a large frying pan over medium-high heat. Brown the oxtail in the pan until browned all over, about 10 minutes. Place into a pressure cooker, and pour in 375ml water. Cook at pressure for 25 minutes, then remove from heat, and remove the lid according to manufacturer's directions.\r\nAdd the broad beans and pimento berries, and bring to a simmer over medium-high heat. Dissolve the cornflour in 2 tablespoons water, and stir into the simmering oxtail. Cook and stir a few minutes until the sauce has thickened, and the broad beans are tender.",
+                  "description": "Tender oxtail cooked with broad beans, carrots, and other vegetables in a savory sauce. Served with rice and plantains.",
+                  "thumb": "https://www.themealdb.com/images/media/meals/1520083578.jpg",
+                  "time": "35",
+                  "ingredients": [
+                    {
+                      "_id": "64ac11030b04264e7f7ed195",
+                      "id": "640c2dd963a319ea671e3841",
+                      "measure": "450g"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed196",
+                      "id": "640c2dd963a319ea671e37ae",
+                      "measure": "1 chopped"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed197",
+                      "id": "640c2dd963a319ea671e3770",
+                      "measure": "1"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed198",
+                      "id": "640c2dd963a319ea671e36e3",
+                      "measure": "2 cloves minced"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed199",
+                      "id": "640c2dd963a319ea671e36e8",
+                      "measure": "1 tsp "
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed19a",
+                      "id": "640c2dd963a319ea671e3840",
+                      "measure": "1 chopped"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed19b",
+                      "id": "640c2dd963a319ea671e376c",
+                      "measure": "2 tbs"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed19c",
+                      "id": "640c2dd963a319ea671e36de",
+                      "measure": "1 chopped"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed19d",
+                      "id": "640c2dd963a319ea671e3789",
+                      "measure": "2 tbs"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed19e",
+                      "id": "640c2dd963a319ea671e378f",
+                      "measure": "350ml"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed19f",
+                      "id": "640c2dd963a319ea671e3842",
+                      "measure": "200g"
+                    },
+                    {
+                      "_id": "64ac11030b04264e7f7ed1a0",
+                      "id": "640c2dd963a319ea671e37a4",
+                      "measure": "1 tbs"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      },
+      "AllIngredients": {
+        "type": "array",
+        "items": {
+          "properties": {
+            "_id": {
+              "type": "string",
+              "description": "Ingredient Id",
+              "example": "640c2dd963a319ea671e365c"
+            },
+            "name": {
+              "type": "string",
+              "description": "Ingredient name",
+              "example": "Salmon"
+            },
+            "img": {
+              "type": "string",
+              "description": "Ingredient image",
+              "example": "https://res.cloudinary.com/ddbvbv5sp/image/upload/v1678564123/bwzvxyjxozyankmd6ky8.png"
+            },
+            "desc": {
+              "type": "string",
+              "description": "Ingredient description",
+              "example": "Salmon is the common name for several species of ray-finned fish in the family Salmonidae. Other fish in the same family include trout, char, grayling and whitefish. Salmon are native to tributaries of the North Atlantic (genus Salmo) and Pacific Ocean (genus Oncorhynchus). Many species of salmon have been introduced into non-native environments such as the Great Lakes of North America and Patagonia in South America. Salmon are intensively farmed in many parts of the world.\r\n\r\nTypically, salmon are anadromous: they hatch in fresh water, migrate to the ocean, then return to fresh water to reproduce. However, populations of several species are restricted to fresh water through their lives. Folklore has it that the fish return to the exact spot where they hatched to spawn. Tracking studies have shown this to be mostly true. A portion of a returning salmon run may stray and spawn in different freshwater systems; the percent of straying depends on the species of salmon. Homing behavior has been shown to depend on olfactory memory. Salmon date back to the Neogene."
+            }
+          },
+          "example": {
+            "example1": {
+              "value": [
+                {
+                  "_id": "640c2dd963a319ea671e36fd",
+                  "name": "Honey",
+                  "desc": "Honey is a natural sweetener that is made by bees from the nectar of flowers. It is commonly used in cooking and baking to add sweetness and flavor to dishes, as well as a natural remedy for coughs and sore throats.",
+                  "img": "https://res.cloudinary.com/ddbvbv5sp/image/upload/v1678564854/lqtybzr3qlhxwl81g546.png"
+                },
+                {
+                  "_id": "640c2dd963a319ea671e3701",
+                  "name": "Ice Cream",
+                  "desc": "A frozen dessert typically made with cream, sugar, and flavorings.",
+                  "img": "https://res.cloudinary.com/ddbvbv5sp/image/upload/v1678564854/zcnlowpxznh9nt1bv3a0.png"
                 }
               ]
             }
