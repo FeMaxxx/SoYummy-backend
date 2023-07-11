@@ -30,6 +30,22 @@ const recipeSchema = new Schema(
     },
     category: {
       type: String,
+      enum: [
+        "Beef",
+        "Breakfast",
+        "Chicken",
+        "Dessert",
+        "Goat",
+        "Lamb",
+        "Miscellaneous",
+        "Pasta",
+        "Pork",
+        "Seafood",
+        "Side",
+        "Starter",
+        "Vegan",
+        "Vegetarian",
+      ],
       required: [true, "Category is required"],
     },
     instructions: {

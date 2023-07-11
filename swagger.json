@@ -696,6 +696,22 @@
             },
             "category": {
               "type": "string",
+              "enum": [
+                "Beef",
+                "Breakfast",
+                "Chicken",
+                "Dessert",
+                "Goat",
+                "Lamb",
+                "Miscellaneous",
+                "Pasta",
+                "Pork",
+                "Seafood",
+                "Side",
+                "Starter",
+                "Vegan",
+                "Vegetarian"
+              ],
               "description": "Category of the recipe",
               "example": "Lamb"
             },
