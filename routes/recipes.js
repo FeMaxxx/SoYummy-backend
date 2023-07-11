@@ -7,6 +7,8 @@ import { ctrl } from "../controllers/recipes.js";
 export const recipeRouter = express.Router();
 
 recipeRouter.get("/", authenticate, ctrl.getRecipes);
+recipeRouter.get("/:recipeId", authenticate, ctrl.getRecipeById);
+recipeRouter.get("/category-list", authenticate, ctrl.getCategoryList);
 recipeRouter.get("/:category", authenticate, ctrl.getRecipesByCategory);
 recipeRouter.get("/:ingredientId", authenticate, ctrl.getRecipesByIngredient);
 recipeRouter.post(

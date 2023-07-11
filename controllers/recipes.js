@@ -1,10 +1,21 @@
 import mongoose from "mongoose";
 import { ctrlWrapper } from "../helpers/index.js";
-import { Recipe } from "../models/recipe.js";
+import { Category, Recipe } from "../models/recipe.js";
 
 const getRecipes = async (req, res) => {
   const recipes = await Recipe.find();
   res.status(200).json(recipes);
+};
+
+const getRecipeById = async (req, res) => {
+  const recipeId = req.query.category;
+  const recipes = await Recipe.find({ recipeId });
+  res.status(200).json(recipes);
+};
+
+const getCategoryList = async (req, res) => {
+  const categories = await Category.find();
+  res.status(200).json(categories);
 };
 
 const getRecipesByCategory = async (req, res) => {
@@ -72,6 +83,8 @@ const deleteRecipeById = async (req, res) => {
 
 export const ctrl = {
   getRecipes: ctrlWrapper(getRecipes),
+  getRecipeById: ctrlWrapper(getRecipeById),
+  getCategoryList: ctrlWrapper(getCategoryList),
   getRecipesByCategory: ctrlWrapper(getRecipesByCategory),
   getRecipesByIngredient: ctrlWrapper(getRecipesByIngredient),
   addRecipe: ctrlWrapper(addRecipe),
