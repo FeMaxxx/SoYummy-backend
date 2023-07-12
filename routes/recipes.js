@@ -9,7 +9,6 @@ export const recipeRouter = express.Router();
 recipeRouter.get("/", authenticate, ctrl.getRecipes);
 recipeRouter.get("/:recipeId", authenticate, ctrl.getRecipeById);
 recipeRouter.get("/search/:title", authenticate, ctrl.getRecipesByTitle);
-recipeRouter.get("/category-list", authenticate, ctrl.getCategoryList);
 recipeRouter.get(
   "/categories/:category",
   authenticate,

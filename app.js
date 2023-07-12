@@ -6,11 +6,15 @@ import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./swagger.json" assert { type: "json" };
 import { authenticate } from "./middlewares/index.js";
 
-import { authRouter, ingredientRouter, recipeRouter } from "./routes/index.js";
+import {
+  authRouter,
+  ingredientRouter,
+  recipeRouter,
+  categoryRouter,
+} from "./routes/index.js";
 import { favoriteRouter } from "./routes/favorite.js";
 import { subscribeRouter } from "./routes/subscribe.js";
 import { usersRouter } from "./routes/users.js";
-import { categoryRouter } from "./routes/categories.js";
 
 dotenv.config();
 
