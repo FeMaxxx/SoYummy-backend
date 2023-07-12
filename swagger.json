@@ -21,6 +21,11 @@
       "description": "Recipes endpoints"
     },
     {
+      "name": "Categories",
+      "description": "Categories endpoints"
+    },
+
+    {
       "name": "Search ingredients",
       "description": "Ingredients endpoints"
     },
@@ -399,6 +404,40 @@
                 "schema": {
                   "type": "array",
                   "$ref": "#/components/schemas/RecipesByTitleResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem with Authorization missing header, invalid token"
+          }
+        }
+      }
+    },
+    "/api/category-list": {
+      "get": {
+        "summary": "Get all categories",
+        "tags": ["Categories"],
+        "parameters": [
+          {
+            "name": "Authorization Token",
+            "in": "header",
+            "description": "User authorization token",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YThmNGQ2ZTI0YjNlNDJmNzg5MDgyNyIsImlhdCI6MTY4ODg5NjUyNywiZXhwIjoxNjg4OTMyNTI3fQ.43qk7STIlTK8DRgoBu6wwaMmaVAWe0C8dX0aZ4LG3hU"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "$ref": "#/components/schemas/AllCategoriesResponse"
                 }
               }
             }
@@ -1578,6 +1617,37 @@
                       "measure": "1 tbs"
                     }
                   ]
+                }
+              ]
+            }
+          }
+        }
+      },
+      "AllCategoriesResponse": {
+        "type": "array",
+        "items": {
+          "properties": {
+            "_id": {
+              "type": "string",
+              "description": "Category Id",
+              "example": "6462a6cd4c3d0ddd28897f8f"
+            },
+            "name": {
+              "type": "string",
+              "description": "Category name",
+              "example": "Pasta"
+            }
+          },
+          "example": {
+            "example1": {
+              "value": [
+                {
+                  "_id": "6462a6cd4c3d0ddd28897f8f",
+                  "name": "Dessert"
+                },
+                {
+                  "_id": "6462a6cd4c3d0ddd28897f94",
+                  "name": "Pasta"
                 }
               ]
             }
