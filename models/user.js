@@ -21,7 +21,6 @@ const userSchema = new Schema(
     },
     avatar: { type: String, default: "" },
     registerDate: { type: Date, default: new Date() },
-    ownRecipes: { type: [String], default: [] },
     favorite: { type: [String], default: [] },
     shoppingList: { type: [Object], default: [] },
     theme: {
