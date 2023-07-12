@@ -26,10 +26,12 @@ const get = async (req, res) => {
   const { favorite } = req.user;
   const skip = (page - 1) * limit;
   const query = { _id: { $in: favorite } };
+  console.log(query);
+
   const total = await Recipe.countDocuments(query);
   const recipes = await Recipe.find(query).skip(skip).limit(limit);
 
-  res.status(201).json({ recipes, total });
+  res.status(200).json({ recipes, total });
 };
 
 const remove = async (req, res) => {
@@ -43,7 +45,7 @@ const remove = async (req, res) => {
 
   await User.findByIdAndUpdate(_id, { $pull: { favorite: recipeId } });
 
-  res.status(201).json("Recipe remove from favorite");
+  res.status(200).json("Recipe remove from favorite");
 };
 
 export const ctrl = {

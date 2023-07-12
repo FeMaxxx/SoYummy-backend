@@ -14,7 +14,7 @@ const changeName = async (req, res) => {
 
   const user = await User.findByIdAndUpdate(_id, req.body, { new: true });
 
-  res.status(201).json(user);
+  res.status(200).json(user);
 };
 
 const changeAvatar = async (req, res) => {

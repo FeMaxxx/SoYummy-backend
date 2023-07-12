@@ -8,7 +8,7 @@ const get = async (req, res) => {
   const total = await Recipe.countDocuments({ owner: _id });
   const recipes = await Recipe.find({ owner: _id }).skip(skip).limit(limit);
 
-  res.status(201).json({ recipes, total });
+  res.status(200).json({ recipes, total });
 };
 
 export const ctrl = {
