@@ -6,6 +6,7 @@ export const recipeRouter = express.Router();
 
 recipeRouter.get("/", ctrl.getRecipes);
 recipeRouter.get("/:recipeId", ctrl.getRecipeById);
+recipeRouter.get("/main-page", ctrl.getRecipesByCategories);
 recipeRouter.get("/search/:title", ctrl.getRecipesByTitle);
 recipeRouter.get("/categories/:category", ctrl.getRecipesByCategory);
 recipeRouter.get("/ingredients/:ingredientId", ctrl.getRecipesByIngredient);
