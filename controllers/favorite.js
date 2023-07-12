@@ -4,19 +4,19 @@ import { Recipe } from "../models/recipe.js";
 
 const add = async (req, res) => {
   const { _id, favorite } = req.user;
-  const { id } = req.body;
+  const { recipeId } = req.params;
 
-  const resultRecipe = await Recipe.findById(id);
+  const resultRecipe = await Recipe.findById(recipeId);
   if (resultRecipe.length === 0) {
     throw HttpError(404, "Recipe not found");
   }
 
-  const recipeInFavorite = favorite.some(el => el === id);
+  const recipeInFavorite = favorite.some(el => el === recipeId);
   if (recipeInFavorite) {
     throw HttpError(409, "The recipe already added to favorite");
   }
 
-  await User.findByIdAndUpdate(_id, { $push: { favorite: id } });
+  await User.findByIdAndUpdate(_id, { $push: { favorite: recipeId } });
 
   res.status(201).json("Recipe added to favorite");
 };
@@ -34,14 +34,14 @@ const get = async (req, res) => {
 
 const remove = async (req, res) => {
   const { _id, favorite } = req.user;
-  const { id } = req.body;
+  const { recipeId } = req.params;
 
-  const recipeInFavorite = favorite.some(el => el === id);
+  const recipeInFavorite = favorite.some(el => el === recipeId);
   if (!recipeInFavorite) {
     throw HttpError(409, "This recipe is not in your favorites");
   }
 
-  await User.findByIdAndUpdate(_id, { $pull: { favorite: id } });
+  await User.findByIdAndUpdate(_id, { $pull: { favorite: recipeId } });
 
   res.status(201).json("Recipe remove from favorite");
 };
