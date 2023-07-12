@@ -2,5 +2,18 @@ import { authRouter } from "./auth.js";
 import { recipeRouter } from "./recipes.js";
 import { ingredientRouter } from "./ingredients.js";
 import { categoryRouter } from "./categories.js";
+import { usersRouter } from "./users.js";
+import { shoppingListRouter } from "./shoppingList.js";
+import { subscribeRouter } from "./subscribe.js";
+import { favoriteRouter } from "./favorite.js";
 
-export { authRouter, recipeRouter, ingredientRouter, categoryRouter };
+export {
+  authRouter,
+  recipeRouter,
+  ingredientRouter,
+  usersRouter,
+  shoppingListRouter,
+  subscribeRouter,
+  favoriteRouter,
+  categoryRouter,
+};
