@@ -24,20 +24,25 @@ const getRecipesByCategory = async (req, res) => {
   res.status(200).json(recipes);
 };
 
+const getRecipesByTitle = async (req, res) => {
+  const title = req.params.title;
+  const regex = new RegExp(title, "i");
+
+  const recipes = await Recipe.find(
+    { title: { $regex: regex } },
+    { _id: 0 }
+  ).lean();
+
+  res.status(200).json(recipes);
+};
+
 const getRecipesByIngredient = async (req, res) => {
-  const ingredientId = req.query.ingredientId;
-  // const recipes = await Recipe.find({ ingredients: { $in: [ingredientId] } });
-
-  //   const recipes = await Recipe.find({
-  //     ingredients: { $elemMatch: { id: { $in: [ingredientId] } } },
-  //   });
-  //   console.log(recipes);
+  const ingredientId = req.params.ingredientId;
   const ObjectId = mongoose.Types.ObjectId;
-
   const recipes = await Recipe.find({
     ingredients: {
       $elemMatch: {
-        id: ObjectId(ingredientId),
+        id: new ObjectId(ingredientId),
       },
     },
   });
@@ -84,6 +89,7 @@ const deleteRecipeById = async (req, res) => {
 export const ctrl = {
   getRecipes: ctrlWrapper(getRecipes),
   getRecipeById: ctrlWrapper(getRecipeById),
+  getRecipesByTitle: ctrlWrapper(getRecipesByTitle),
   getCategoryList: ctrlWrapper(getCategoryList),
   getRecipesByCategory: ctrlWrapper(getRecipesByCategory),
   getRecipesByIngredient: ctrlWrapper(getRecipesByIngredient),
