@@ -27,8 +27,18 @@ const changeAvatar = async (req, res) => {
   res.status(200).json(user);
 };
 
+const changeTheme = async (req, res) => {
+  const { _id } = req.user;
+  const { theme } = req.para;
+
+  const user = await User.findByIdAndUpdate(_id, { theme }, { new: true });
+
+  res.status(200).json(user);
+};
+
 export const ctrl = {
   getCurrent: ctrlWrapper(getCurrent),
   changeName: ctrlWrapper(changeName),
   changeAvatar: ctrlWrapper(changeAvatar),
+  changeTheme: ctrlWrapper(changeTheme),
 };

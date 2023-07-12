@@ -10,3 +10,5 @@ usersRouter.get("/current", ctrl.getCurrent);
 usersRouter.patch("/changeName", validateBody(schemas.changeNameSchema), ctrl.changeName);
 
 usersRouter.patch("/changeAvatar", uploadAvatar.single("file"), ctrl.changeAvatar);
+
+usersRouter.patch("/changeTheme", validateBody(schemas.changeThemeSchema), ctrl.changeTheme);

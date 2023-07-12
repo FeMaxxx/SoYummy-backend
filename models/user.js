@@ -51,10 +51,15 @@ const changeNameSchema = Joi.object({
   name: Joi.string().min(2).required(),
 });
 
+const changeThemeSchema = Joi.object({
+  theme: Joi.string().valid("light", "dark").required(),
+});
+
 export const User = model("user", userSchema);
 
 export const schemas = {
   registerSchema,
   loginSchema,
   changeNameSchema,
+  changeThemeSchema,
 };
