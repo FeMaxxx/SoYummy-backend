@@ -6,6 +6,7 @@ import { usersRouter } from "./users.js";
 import { shoppingListRouter } from "./shoppingList.js";
 import { subscribeRouter } from "./subscribe.js";
 import { favoriteRouter } from "./favorite.js";
+import { ownRecipesRouter } from "./ownRecipes.js";
 
 export {
   authRouter,
@@ -16,4 +17,5 @@ export {
   subscribeRouter,
   favoriteRouter,
   categoryRouter,
+  ownRecipesRouter,
 };

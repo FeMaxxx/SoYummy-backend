@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
-import { ctrlWrapper } from "../helpers/index.js";
-import { Category, Recipe } from "../models/recipe.js";
+import { HttpError, ctrlWrapper } from "../helpers/index.js";
+import { Recipe } from "../models/recipe.js";
+import { Category } from "../models/categories.js";
 
 const getRecipes = async (req, res) => {
   const recipes = await Recipe.find();
@@ -28,10 +29,7 @@ const getRecipesByTitle = async (req, res) => {
   const title = req.params.title;
   const regex = new RegExp(title, "i");
 
-  const recipes = await Recipe.find(
-    { title: { $regex: regex } },
-    { _id: 0 }
-  ).lean();
+  const recipes = await Recipe.find({ title: { $regex: regex } }, { _id: 0 }).lean();
 
   res.status(200).json(recipes);
 };
@@ -50,41 +48,49 @@ const getRecipesByIngredient = async (req, res) => {
 };
 
 const addRecipe = async (req, res) => {
-  const { _id: user } = req.user;
-  const result = await Recipe.create({ ...req.body, user });
-  res.status(201).json({ _id: result.id });
+  const { _id: owner } = req.user;
+  const {
+    body: { title, description, category, time, ingredients, instructions },
+    file,
+  } = req;
+
+  if (!file) throw HttpError(400, "Image is required");
+
+  const data = {
+    title,
+    description,
+    category,
+    time,
+    ingredients: JSON.parse(ingredients),
+    instructions,
+    thumb: file.path,
+    preview: file.path,
+    owner,
+  };
+
+  const result = await Recipe.create(data);
+
+  res.status(201).json(result);
 };
 
 const deleteRecipeById = async (req, res) => {
-  const { recipeId, userId } = req.params;
-  const recipe = await Recipe.findById({ recipeId });
-  if (recipe.user !== userId) {
-    throw new HttpError(
+  const { _id: userId } = req.user;
+  const { recipeId } = req.params;
+  const recipe = await Recipe.findById({ _id: recipeId });
+
+  if (recipe.length === 0) {
+    throw HttpError(404, "No recipe found with that id");
+  }
+  if (userId.toString() !== recipe?.owner?.toString()) {
+    throw HttpError(
       403,
       "This recipe was not created by you. You have got no rights to remove it."
     );
   }
-  if (!recipe) {
-    throw new HttpError(404, "No recipe found with that id");
-  }
-  await Recipe.findByIdAndDelete({ recipeId });
+
+  await Recipe.findByIdAndDelete({ _id: recipeId });
   res.status(200).json({ message: "Recipe deleted" });
 };
-
-// const uploadRecipeImage = async (req, res) => {
-//   const locaFilePath = req.file.path;
-//   const result = await cloudinary.uploader.upload(locaFilePath, {
-//     folder: "avatars",
-//     resource_type: "image",
-//     quality: "auto",
-//     fetch_format: "auto",
-//     public_id: req.file.originalname,
-//     format: "webp",
-//     transformation: [{ width: 136, crop: "fill" }],
-//   });
-
-//   res.status(200).json({ url: result.secure_url });
-// };
 
 export const ctrl = {
   getRecipes: ctrlWrapper(getRecipes),
@@ -95,6 +101,4 @@ export const ctrl = {
   getRecipesByIngredient: ctrlWrapper(getRecipesByIngredient),
   addRecipe: ctrlWrapper(addRecipe),
   deleteRecipeById: ctrlWrapper(deleteRecipeById),
-
-  //   uploadRecipeImage: ctrlWrapper(uploadRecipeImage),
 };

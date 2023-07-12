@@ -1,119 +1,60 @@
 import { Schema, model } from "mongoose";
 import { handleMongooseError } from "../helpers/index.js";
-import Joi from "joi";
 
-const ingredientSchema = new Schema({
-  id: {
-    type: String,
-    required: [true, "Ingredient id is required"],
-  },
-  measure: {
-    type: String,
-    required: [true, "Ingredient measure is required"],
-  },
-});
-const categorySchema = new Schema({
-  category: {
-    type: String,
-    enum: [
-      "Beef",
-      "Breakfast",
-      "Chicken",
-      "Dessert",
-      "Goat",
-      "Lamb",
-      "Miscellaneous",
-      "Pasta",
-      "Pork",
-      "Seafood",
-      "Side",
-      "Starter",
-      "Vegan",
-      "Vegetarian",
-    ],
-    required: [true, "Category is required"],
-  },
-});
+const categories = [
+  "Beef",
+  "Breakfast",
+  "Chicken",
+  "Dessert",
+  "Goat",
+  "Lamb",
+  "Miscellaneous",
+  "Pasta",
+  "Pork",
+  "Seafood",
+  "Side",
+  "Starter",
+  "Vegan",
+  "Vegetarian",
+];
 
 const recipeSchema = new Schema(
   {
     title: {
       type: String,
-      required: [true, "Recipe title is required"],
+      required: true,
     },
     description: {
       type: String,
-      required: [true, "Recipe description is required"],
+      required: true,
     },
-    user: {
+    owner: {
       type: Schema.Types.ObjectId,
-      required: [true, "UserId is required"],
       ref: "user",
     },
     category: {
       type: String,
-      enum: [
-        "Beef",
-        "Breakfast",
-        "Chicken",
-        "Dessert",
-        "Goat",
-        "Lamb",
-        "Miscellaneous",
-        "Pasta",
-        "Pork",
-        "Seafood",
-        "Side",
-        "Starter",
-        "Vegan",
-        "Vegetarian",
-      ],
-      required: [true, "Category is required"],
+      enum: categories,
+      required: true,
     },
     instructions: {
       type: String,
-      required: [true, "Instructions are required"],
+      required: true,
     },
-    thumb: {
-      type: String,
-      default: "blablabla cloudinary default image",
-    },
+    thumb: String,
+    preview: String,
     time: {
       type: String,
-      required: [true, "Preparing time is required"],
+      required: true,
     },
     ingredients: {
-      type: [ingredientSchema],
-      required: [true, "Ingredients are required"],
+      type: [Object],
+      required: true,
     },
   },
-  { versionKey: false, timestamps: true }
+  { versionKey: false, timestamps: false }
 );
 
 recipeSchema.post("save", handleMongooseError);
 
-const ingredientAddSchema = Joi.object().keys({
-  name: Joi.string().required(),
-  measure: Joi.string().required(),
-});
-const addSchema = Joi.object({
-  title: Joi.string().required(),
-  description: Joi.string().required(),
-  user: Joi.string().required(),
-  category: Joi.string().required(),
-  instructions: Joi.string().required(),
-  thumb: Joi.string().required(),
-  time: Joi.string().required(),
-  ingredients: Joi.array().items(ingredientAddSchema).required(),
-});
-
-// const updateRecipeImgSchema = Joi.object({
-//   image: Joi.string().required(),
-// });
-
 export const Recipe = model("recipe", recipeSchema);
-export const Category = model("category", categorySchema);
-export const schemas = {
-  addSchema,
-  // updateRecipeImgSchema,
-};
