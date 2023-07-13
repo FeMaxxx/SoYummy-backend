@@ -15,6 +15,7 @@ import {
   subscribeRouter,
   shoppingListRouter,
   ownRecipesRouter,
+  mainPageRouter,
 } from "./routes/index.js";
 
 dotenv.config();
@@ -33,9 +34,10 @@ app.use("/api/favirite", authenticate, favoriteRouter);
 app.use("/api/subscribe", subscribeRouter);
 app.use("/api/recipes", authenticate, recipeRouter);
 app.use("/api/ingredients", authenticate, ingredientRouter);
-app.use("/api/category-list", authenticate, categoryRouter);
+app.use("/api/categoryList", authenticate, categoryRouter);
 app.use("/api/shoppingList", authenticate, shoppingListRouter);
 app.use("/api/ownRecipes", authenticate, ownRecipesRouter);
+app.use("/api/mainPage", authenticate, mainPageRouter);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
