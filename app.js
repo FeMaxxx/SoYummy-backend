@@ -30,7 +30,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRouter);
 app.use("/api/users", authenticate, usersRouter);
-app.use("/api/favirite", authenticate, favoriteRouter);
+app.use("/api/favorite", authenticate, favoriteRouter);
 app.use("/api/subscribe", subscribeRouter);
 app.use("/api/recipes", authenticate, recipeRouter);
 app.use("/api/ingredients", authenticate, ingredientRouter);
