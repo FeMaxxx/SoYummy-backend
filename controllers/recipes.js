@@ -29,41 +29,6 @@ const getRecipesByCategory = async (req, res) => {
   res.status(200).json(recipes);
 };
 
-// const getRecipesByCategories = async (req, res) => {
-//   const { page = 1, limit = 8 } = req.query;
-//   const skip = (page - 1) * limit;
-
-//   const categories = ["Breakfast", "Miscellaneous", "Chicken", "Dessert"];
-
-//   const recipesPromises = categories.map((category) => {
-//     const regexCategory = new RegExp(category, "i");
-//     return Recipe.find({ category: regexCategory }).skip(skip).limit(limit);
-//   });
-
-//   const recipes = await Promise.all(recipesPromises);
-
-//   res.status(200).json(recipes);
-// };
-
-const getRecipesByCategories = async (req, res) => {
-  console.log("butterfly");
-
-  const { page = 1, limit = 8 } = req.query;
-  const skip = (page - 1) * limit;
-
-  const categories = ["Breakfast", "Miscellaneous", "Chicken", "Dessert"];
-
-  const recipesPromises = categories.map(async (category) => {
-    const regexCategory = new RegExp(category, "i");
-    const recipes = await Recipe.find({ category: regexCategory })
-      .skip(skip)
-      .limit(limit);
-    return recipes;
-  });
-  const recipes = await Promise.all(recipesPromises);
-
-  res.status(200).json(recipes);
-};
 const getRecipesByTitle = async (req, res) => {
   const title = req.params.title;
   const regex = new RegExp(title, "i");
@@ -140,7 +105,6 @@ export const ctrl = {
   getRecipesByTitle: ctrlWrapper(getRecipesByTitle),
   getCategoryList: ctrlWrapper(getCategoryList),
   getRecipesByCategory: ctrlWrapper(getRecipesByCategory),
-  getRecipesByCategories: ctrlWrapper(getRecipesByCategories),
   getRecipesByIngredient: ctrlWrapper(getRecipesByIngredient),
   addRecipe: ctrlWrapper(addRecipe),
   deleteRecipeById: ctrlWrapper(deleteRecipeById),
