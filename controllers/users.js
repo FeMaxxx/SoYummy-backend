@@ -22,14 +22,18 @@ const changeAvatar = async (req, res) => {
 
   if (!req.file) throw HttpError(400, "Image is required");
 
-  const user = await User.findByIdAndUpdate(_id, { avatar: req.file.path }, { new: true });
+  const user = await User.findByIdAndUpdate(
+    _id,
+    { avatar: req.file.path },
+    { new: true }
+  );
 
   res.status(200).json(user);
 };
 
 const changeTheme = async (req, res) => {
   const { _id } = req.user;
-  const { theme } = req.para;
+  const { theme } = req.params;
 
   const user = await User.findByIdAndUpdate(_id, { theme }, { new: true });
 

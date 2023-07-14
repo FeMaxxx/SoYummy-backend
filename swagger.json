@@ -17,6 +17,10 @@
       "description": "Authorization endpoints"
     },
     {
+      "name": "User",
+      "description": "User's endpoints"
+    },
+    {
       "name": "Recipes",
       "description": "Recipes endpoints"
     },
@@ -76,12 +80,8 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "example": "Successful registration"
-                    }
-                  }
+                  "$ref": "#/components/schemas/UserResponse",
+                  "type": "object"
                 }
               }
             }
@@ -116,7 +116,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/LoginResponse",
+                  "$ref": "#/components/schemas/UserResponse",
                   "type": "object"
                 }
               }
@@ -157,7 +157,143 @@
         }
       }
     },
-    "/api/mainPage": {},
+    "/api/users/current": {
+      "get": {
+        "summary": "Check user",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer token",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OTQyYjI4MzEyY2YzYWJlYTExNjMzNCIsImlhdCI6MTY4NzQzMjM1MSwiZXhwIjoxNjg3NTE4NzUxfQ.DCEB2Q0lghWYieYxiZohu4uMMpwMYFa55XOqMgggVVg"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse",
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem with Bearer Token, missing header, invalid token"
+          }
+        }
+      }
+    },
+    "/api/users/changeName": {
+      "patch": {
+        "summary": "Update user's name",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "Authorization Token",
+            "in": "header",
+            "description": "User authorization token",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OTQyYjI4MzEyY2YzYWJlYTExNjMzNCIsImlhdCI6MTY4NzQzMjM1MSwiZXhwIjoxNjg3NTE4NzUxfQ.DCEB2Q0lghWYieYxiZohu4uMMpwMYFa55XOqMgggVVg"
+            }
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "User ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "649885bb8cfd32ed13fd42d3"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/ChangeNameRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful update",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "example": "Successful update"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem with Authorization missing header, invalid token"
+          },
+          "400": {
+            "description": "\"name\" is required"
+          },
+          "404": {
+            "description": "Column id (from params) not found"
+          }
+        }
+      }
+    },
+    "/api/users/changeAvatar": {},
+    "/api/users/changeTheme": {},
+    "/api/subscribe": {},
+    "/api/subscribe/confirm/{userId}": {},
+    "/api/mainPage": {
+      "get": {
+        "summary": "Get 4 categories with 4 recipes",
+        "tags": ["Main page"],
+        "parameters": [
+          {
+            "name": "Authorization Token",
+            "in": "header",
+            "description": "User authorization token",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YThmNGQ2ZTI0YjNlNDJmNzg5MDgyNyIsImlhdCI6MTY4ODg5NjUyNywiZXhwIjoxNjg4OTMyNTI3fQ.43qk7STIlTK8DRgoBu6wwaMmaVAWe0C8dX0aZ4LG3hU"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "$ref": "#/components/schemas/MainPageResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem with Authorization missing header, invalid token"
+          }
+        }
+      }
+    },
     "/api/recipes": {
       "get": {
         "summary": "Get all recipes",
@@ -421,7 +557,7 @@
         }
       }
     },
-    "/api/category-list": {
+    "/api/categoryList": {
       "get": {
         "summary": "Get all categories",
         "tags": ["Categories"],
@@ -492,7 +628,7 @@
     "/api/favorite/": {
       "get": {
         "summary": "Get all favorite recipes",
-        "tags": ["Favorite"],
+        "tags": ["Favorites"],
         "parameters": [
           {
             "name": "Authorization Token",
@@ -512,7 +648,7 @@
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "$ref": "#/components/schemas/RecipesResponse"
+                  "$ref": "#/components/schemas/FavoriteResponse"
                 }
               }
             }
@@ -524,9 +660,58 @@
       }
     },
     "/api/favorite/{recipeId}": {
+      "post": {
+        "summary": "Add recipe to favorites",
+        "tags": ["Favorites"],
+        "parameters": [
+          {
+            "name": "Authorization Token",
+            "in": "header",
+            "description": "User authorization token",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OTQyYjI4MzEyY2YzYWJlYTExNjMzNCIsImlhdCI6MTY4NzQzMjM1MSwiZXhwIjoxNjg3NTE4NzUxfQ.DCEB2Q0lghWYieYxiZohu4uMMpwMYFa55XOqMgggVVg"
+            }
+          },
+          {
+            "name": "recipeId",
+            "in": "path",
+            "description": "Recipe ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "649885bb8cfd32ed13fd42d3"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful adding",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "example": "Recipe added to favorite"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem with Authorization missing header, invalid token"
+          },
+          "404": {
+            "description": "Cast to ObjectId failed for value \"6462a8f74c3d0ddd2898094\" (type string) at path \"_id\" for model \"recipe\". Recipe id (from params) not found"
+          }
+        }
+      },
       "delete": {
-        "summary": "Delete recipe",
-        "tags": ["Recipes"],
+        "summary": "Delete recipe from favorites",
+        "tags": ["Favorites"],
         "parameters": [
           {
             "name": "Authorization Token",
@@ -573,6 +758,44 @@
           }
         }
       }
+    },
+    "/api/ownRecipes": {
+      "get": {
+        "summary": "Get all recipes that were created by user",
+        "tags": ["Own recipes"],
+        "parameters": [
+          {
+            "name": "Authorization Token",
+            "in": "header",
+            "description": "User authorization token",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YThmNGQ2ZTI0YjNlNDJmNzg5MDgyNyIsImlhdCI6MTY4ODg5NjUyNywiZXhwIjoxNjg4OTMyNTI3fQ.43qk7STIlTK8DRgoBu6wwaMmaVAWe0C8dX0aZ4LG3hU"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "$ref": "#/components/schemas/OwnRecipesResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem with Authorization missing header, invalid token"
+          }
+        }
+      }
+    },
+    "/api/shoppingList": {
+      "post": {},
+      "delete": {}
     }
   },
   "components": {
@@ -620,7 +843,7 @@
         },
         "required": ["email", "password"]
       },
-      "LoginResponse": {
+      "UserResponse": {
         "type": "object",
         "properties": {
           "token": {
@@ -1128,13 +1351,93 @@
         "properties": {
           "_id": {
             "type": "string",
-            "description": "Recipe title",
-            "example": "Rigatoni with fennel sausage sauce"
+            "description": "Recipe ID",
+            "example": "640c2dd963a319ea671e378b"
           }
         },
         "required": ["_id"]
       },
-      "MainPageRespond": {
+      "FavoriteResponse": {
+        "type": "object",
+        "properties": {
+          "recipes": {
+            "type": "array",
+            "items": {
+              "items": {
+                "$ref": "#/components/schemas/RecipesResponse"
+              }
+            }
+          },
+          "total": {
+            "type": "Number",
+            "description": "The total Number of the favorite recipes",
+            "example": 1
+          }
+        },
+        "example": {
+          "example1": {
+            "value": [
+              {
+                "recipes": [
+                  {
+                    "_id": "6462a8f74c3d0ddd28898099",
+                    "title": "Crispy Sausages and Greens",
+                    "category": "Pork",
+                    "area": "Irish",
+                    "instructions": "Preheat the oven to 350°. Remove the stems from one bunch of Tuscan kale and tear the leaves into 1\" pieces (mustard greens, collards, spinach, and chard are great, too). Coarsely chop half a head of green cabbage. Combine the greens in a large baking dish and add 4 cloves of thinly sliced garlic. Adding some sliced onions and shiitake mushrooms at this point is optional, but highly recommended (I'll sauté the onions and mushrooms in a cast iron baking dish right on the stove before adding to the greens). Coat the greens with some olive oil and pour ½ cup chicken stock or broth over everything. Cover the dish with foil and bake until the greens are wilted, about 15 minutes. Remove foil and season with salt and pepper. Continue to bake until cabbage is tender, about 20-25 minutes more.\r\n\r\nMeanwhile, heat a little olive oil in a large skillet over medium-high. Prick four sweet Italian sausages with a fork and cook until browned on all sides and cooked through, 10 to 12 minutes. When the greens are done, slice the sausage and toss into the greens with a splash of your favorite vinegar (I like sherry or red wine).",
+                    "description": "This dish features crispy sausages served with a side of sautéed greens, such as kale or spinach.",
+                    "thumb": "https://www.themealdb.com/images/media/meals/st1ifa1583267248.jpg",
+                    "preview": "https://res.cloudinary.com/ddbvbv5sp/image/upload/v1678561360/uvbdyx78vgfvnbrrxphu.jpg",
+                    "time": "55",
+                    "youtube": "",
+                    "tags": [],
+                    "ingredients": [
+                      {
+                        "id": "640c2dd963a319ea671e3707",
+                        "measure": "1  bunch"
+                      },
+                      {
+                        "id": "640c2dd963a319ea671e3702",
+                        "measure": "8"
+                      },
+                      {
+                        "id": "640c2dd963a319ea671e37f5",
+                        "measure": "1 Head chopped"
+                      },
+                      {
+                        "id": "640c2dd963a319ea671e36e4",
+                        "measure": "8"
+                      },
+                      {
+                        "id": "640c2dd963a319ea671e37ae",
+                        "measure": "Sliced"
+                      },
+                      {
+                        "id": "640c2dd963a319ea671e37f6",
+                        "measure": "Sliced"
+                      },
+                      {
+                        "id": "640c2dd963a319ea671e3696",
+                        "measure": "1 cup "
+                      },
+                      {
+                        "id": "640c2dd963a319ea671e375e",
+                        "measure": " "
+                      },
+                      {
+                        "id": "640c2dd963a319ea671e373f",
+                        "measure": " "
+                      }
+                    ]
+                  }
+                ],
+                "total": 5
+              }
+            ]
+          }
+        }
+      },
+      "MainPageResponse": {
         "type": "object",
         "properties": {
           "Breakfast": {
@@ -1980,6 +2283,17 @@
             ]
           }
         }
+      },
+      "ChangeNameRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "User's name",
+            "example": "Jerome"
+          }
+        },
+        "required": "name"
       }
     }
   }
