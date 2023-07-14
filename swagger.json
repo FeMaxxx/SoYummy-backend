@@ -375,6 +375,38 @@
       }
     },
     "/api/recipes/{recipeId}": {
+      "get": {
+        "summary": "Get recipe by Id",
+        "tags": ["Recipes"],
+        "parameters": [
+          {
+            "name": "Authorization Token",
+            "in": "header",
+            "description": "User authorization token",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YThmNGQ2ZTI0YjNlNDJmNzg5MDgyNyIsImlhdCI6MTY4ODg5NjUyNywiZXhwIjoxNjg4OTMyNTI3fQ.43qk7STIlTK8DRgoBu6wwaMmaVAWe0C8dX0aZ4LG3hU"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "$ref": "#/components/schemas/RecipesResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem with Authorization missing header, invalid token"
+          }
+        }
+      },
       "delete": {
         "summary": "Delete recipe",
         "tags": ["Recipes"],
