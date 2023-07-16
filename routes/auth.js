@@ -8,6 +8,10 @@ export const authRouter = express.Router();
 
 authRouter.post("/register", validateBody(schemas.registerSchema), ctrl.register);
 
+authRouter.post("/verifyEmail/:verificationCode", ctrl.verifyEmail);
+
 authRouter.post("/login", validateBody(schemas.loginSchema), ctrl.login);
+
+authRouter.post("/refresh", validateBody(schemas.refreshTokenSchema), ctrl.refreshToken);
 
 authRouter.post("/logout", authenticate, ctrl.logout);

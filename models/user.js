@@ -30,6 +30,10 @@ const userSchema = new Schema(
     },
     subscribe: { type: Boolean, default: false },
     token: { type: String, default: "" },
+    accessToken: { type: String, default: "" },
+    refreshToken: { type: String, default: "" },
+    verificationCode: { type: String, default: "" },
+    verifiedEmail: { type: Boolean, default: false },
   },
   { versionKey: false, timestamps: false }
 );
@@ -55,6 +59,10 @@ const changeThemeSchema = Joi.object({
   theme: Joi.string().valid("light", "dark").required(),
 });
 
+const refreshTokenSchema = Joi.object({
+  refreshToken: Joi.string().required(),
+});
+
 export const User = model("user", userSchema);
 
 export const schemas = {
@@ -62,4 +70,5 @@ export const schemas = {
   loginSchema,
   changeNameSchema,
   changeThemeSchema,
+  refreshTokenSchema,
 };
