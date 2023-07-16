@@ -20,8 +20,12 @@ const getCategoryList = async (req, res) => {
 };
 
 const getRecipesByCategory = async (req, res) => {
-  const category = req.query.category;
-  const recipes = await Recipe.find({ category });
+  const { page = 1, limit = 8 } = req.query;
+  const skip = (page - 1) * limit;
+
+  const category = new RegExp(req.params.category, "i");
+  const recipes = await Recipe.find({ category }).skip(skip).limit(limit);
+
   res.status(200).json(recipes);
 };
 
@@ -29,7 +33,10 @@ const getRecipesByTitle = async (req, res) => {
   const title = req.params.title;
   const regex = new RegExp(title, "i");
 
-  const recipes = await Recipe.find({ title: { $regex: regex } }, { _id: 0 }).lean();
+  const recipes = await Recipe.find(
+    { title: { $regex: regex } },
+    { _id: 0 }
+  ).lean();
 
   res.status(200).json(recipes);
 };

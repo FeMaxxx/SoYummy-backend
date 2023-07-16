@@ -7,6 +7,7 @@ import { shoppingListRouter } from "./shoppingList.js";
 import { subscribeRouter } from "./subscribe.js";
 import { favoriteRouter } from "./favorite.js";
 import { ownRecipesRouter } from "./ownRecipes.js";
+import { mainPageRouter } from "./main-page.js";
 
 export {
   authRouter,
@@ -18,4 +19,5 @@ export {
   favoriteRouter,
   categoryRouter,
   ownRecipesRouter,
+  mainPageRouter,
 };
