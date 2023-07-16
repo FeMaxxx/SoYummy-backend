@@ -24,10 +24,9 @@ const register = async (req, res) => {
     html: `<a target="_blank" href="tsylepa.github.io/Yummy/verification/${verificationCode}" >Click verify email</a>`,
   };
   await sendEmail(varifyEmail);
+  await User.create({ ...req.body, password: hashPassword, verificationCode });
 
-  const newUser = await User.create({ ...req.body, password: hashPassword, verificationCode });
-
-  res.status(201).json({ password, ...newUser.toJSON() });
+  res.status(201).json("Verify your email to complete the registration");
 };
 
 const verifyEmail = async (req, res) => {
