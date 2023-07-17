@@ -11,6 +11,7 @@
     "node": ">=14.20.1"
   },
   "dependencies": {
+    "axios": "^1.4.0",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.37.3",
     "cors": "2.8.5",
@@ -25,6 +26,7 @@
     "multer-storage-cloudinary": "^4.0.0",
     "nanoid": "^4.0.2",
     "nodemailer": "^6.9.3",
+    "query-string": "^8.1.0",
     "swagger-ui-express": "^4.6.3"
   },
   "devDependencies": {
