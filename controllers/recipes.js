@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { HttpError, ctrlWrapper } from "../helpers/index.js";
 import { Recipe } from "../models/recipe.js";
 import { Category } from "../models/categories.js";
+import { Ingredient } from "../models/ingredient.js";
 
 const getRecipes = async (req, res) => {
   const recipes = await Recipe.find();
@@ -9,9 +10,29 @@ const getRecipes = async (req, res) => {
 };
 
 const getRecipeById = async (req, res) => {
-  const recipeId = req.query.category;
-  const recipes = await Recipe.find({ recipeId });
-  res.status(200).json(recipes);
+  const recipeId = req.params.recipeId;
+  const recipe = await Recipe.findById(recipeId).lean();
+
+  if (!recipe) {
+    return res.status(404).json({ message: 'The recipe is not found' });
+  }
+
+  const ingredientIds = recipe.ingredients.map((ingredient) => ingredient.id);
+
+  const ingredients = await Ingredient.find({ _id: { $in: ingredientIds } }).lean();
+
+  const updatedIngredients = recipe.ingredients.map((ingredient) => {
+    const matchingIngredient = ingredients.find((item) => item._id.toString() === ingredient.id);
+    return {
+      id: matchingIngredient._id,
+      measure: ingredient.measure,
+      ...matchingIngredient
+    };
+  });
+
+  recipe.ingredients = updatedIngredients;
+
+  res.status(200).json(recipe);
 };
 
 const getCategoryList = async (req, res) => {
