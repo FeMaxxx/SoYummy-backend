@@ -6,14 +6,14 @@ const add = async (req, res) => {
   const { _id, favorite } = req.user;
   const { recipeId } = req.params;
 
-  const resultRecipe = await Recipe.findById(recipeId);
-  if (resultRecipe.length === 0) {
-    throw HttpError(404, "Recipe not found");
-  }
-
-  const recipeInFavorite = favorite.some((el) => el === recipeId);
+  const recipeInFavorite = favorite.some(el => el === recipeId);
   if (recipeInFavorite) {
     throw HttpError(409, "The recipe already added to favorite");
+  }
+
+  const resultRecipe = await Recipe.findByIdAndUpdate(recipeId, { $inc: { popularity: 1 } });
+  if (resultRecipe.length === 0) {
+    throw HttpError(404, "Recipe not found");
   }
 
   await User.findByIdAndUpdate(_id, { $push: { favorite: recipeId } });
@@ -38,12 +38,13 @@ const remove = async (req, res) => {
   const { _id, favorite } = req.user;
   const { recipeId } = req.params;
 
-  const recipeInFavorite = favorite.some((el) => el === recipeId);
+  const recipeInFavorite = favorite.some(el => el === recipeId);
   if (!recipeInFavorite) {
     throw HttpError(409, "This recipe is not in your favorites");
   }
 
   await User.findByIdAndUpdate(_id, { $pull: { favorite: recipeId } });
+  await Recipe.findByIdAndUpdate(recipeId, { $inc: { popularity: -1 } });
 
   res.status(200).json("Recipe has been removed from favorite");
 };

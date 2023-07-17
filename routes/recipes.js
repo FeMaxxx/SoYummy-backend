@@ -5,6 +5,7 @@ import { ctrl } from "../controllers/recipes.js";
 export const recipeRouter = express.Router();
 
 recipeRouter.get("/", ctrl.getRecipes);
+recipeRouter.get("/popular", ctrl.getPopularRecipes);
 recipeRouter.get("/:recipeId", ctrl.getRecipeById);
 recipeRouter.get("/search/:title", ctrl.getRecipesByTitle);
 recipeRouter.get("/categories/:category", ctrl.getRecipesByCategory);
