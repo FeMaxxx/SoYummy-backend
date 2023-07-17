@@ -24,9 +24,9 @@ const getRecipeById = async (req, res) => {
   const updatedIngredients = recipe.ingredients.map((ingredient) => {
     const matchingIngredient = ingredients.find((item) => item._id.toString() === ingredient.id);
     return {
-...matchingIngredient,
+      ...matchingIngredient,
       measure: ingredient.measure
-          };
+    };
   });
 
   recipe.ingredients = updatedIngredients;
@@ -61,16 +61,38 @@ const getRecipesByTitle = async (req, res) => {
   res.status(200).json(recipes);
 };
 
-const getRecipesByIngredient = async (req, res) => {
-  const ingredientId = req.params.ingredientId;
-  const ObjectId = mongoose.Types.ObjectId;
-  const recipes = await Recipe.find({
-    ingredients: {
-      $elemMatch: {
-        id: new ObjectId(ingredientId),
-      },
-    },
-  });
+const getRecipesByIngredientName = async (req, res) => {
+  // const ingredientId = req.params.ingredientId;
+  // const ObjectId = mongoose.Types.ObjectId;
+  // const recipes = await Recipe.find({
+  //   ingredients: {
+  //     $elemMatch: {
+  //       id: new ObjectId(ingredientId),
+  //     },
+  //   },
+  // });
+  // res.status(200).json(recipes);
+
+// const ingredientName = req.params.ingredientName;
+//   const ingredients = await Ingredient.find({
+//     name: { $regex: ingredientName, $options: 'i' },
+//   });
+//   const ingredientIds = ingredients.map((ingredient) => ingredient._id);
+//   const recipes = await Recipe.find({ 'ingredients.id': { $in: ingredientIds } });
+//   res.status(200).json(recipes);
+  
+    const ingredientName = req.params.ingredientName;
+  const regex = new RegExp(ingredientName, "i");
+
+  // Найти ингредиенты, у которых название соответствует части слова
+  const ingredients = await Ingredient.find({ name: { $regex: regex } });
+
+  // Собрать массив идентификаторов найденных ингредиентов
+  const ingredientIds = ingredients.map(ingredient => ingredient.id);
+
+  // Найти рецепты, содержащие найденные ингредиенты
+  const recipes = await Recipe.find({ "ingredients.id": { $in: ingredientIds } });
+
   res.status(200).json(recipes);
 };
 
@@ -125,7 +147,7 @@ export const ctrl = {
   getRecipesByTitle: ctrlWrapper(getRecipesByTitle),
   getCategoryList: ctrlWrapper(getCategoryList),
   getRecipesByCategory: ctrlWrapper(getRecipesByCategory),
-  getRecipesByIngredient: ctrlWrapper(getRecipesByIngredient),
+  getRecipesByIngredientName: ctrlWrapper(getRecipesByIngredientName),
   addRecipe: ctrlWrapper(addRecipe),
   deleteRecipeById: ctrlWrapper(deleteRecipeById),
 };

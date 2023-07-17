@@ -467,7 +467,7 @@
         }
       }
     },
-    "/api/recipes/ingredients/{ingredientId}": {
+    "/api/recipes/ingredients/{ingredientName}": {
       "get": {
         "summary": "Get recipes with this ingredientId",
         "tags": ["Recipes"],
@@ -483,13 +483,15 @@
             }
           },
           {
-            "name": "ingredientId",
+            "name": "ingredientName",
             "in": "path",
             "description": "Ingredient ID",
             "required": true,
             "schema": {
               "type": "string",
-              "example": "649885bb8cfd32ed13fd42d3"
+              "example1": "garlic",
+              "example2": "Garlic",
+              "example3": "rlic"
             }
           }
         ],
