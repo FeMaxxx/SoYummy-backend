@@ -62,37 +62,15 @@ const getRecipesByTitle = async (req, res) => {
 };
 
 const getRecipesByIngredientName = async (req, res) => {
-  // const ingredientId = req.params.ingredientId;
-  // const ObjectId = mongoose.Types.ObjectId;
-  // const recipes = await Recipe.find({
-  //   ingredients: {
-  //     $elemMatch: {
-  //       id: new ObjectId(ingredientId),
-  //     },
-  //   },
-  // });
-  // res.status(200).json(recipes);
+  const ingredientName = req.params.ingredientName;
 
-// const ingredientName = req.params.ingredientName;
-//   const ingredients = await Ingredient.find({
-//     name: { $regex: ingredientName, $options: 'i' },
-//   });
-//   const ingredientIds = ingredients.map((ingredient) => ingredient._id);
-//   const recipes = await Recipe.find({ 'ingredients.id': { $in: ingredientIds } });
-//   res.status(200).json(recipes);
-  
-    const ingredientName = req.params.ingredientName;
   const regex = new RegExp(ingredientName, "i");
-
-  // Найти ингредиенты, у которых название соответствует части слова
   const ingredients = await Ingredient.find({ name: { $regex: regex } });
-
-  // Собрать массив идентификаторов найденных ингредиентов
+  
   const ingredientIds = ingredients.map(ingredient => ingredient.id);
-
-  // Найти рецепты, содержащие найденные ингредиенты
+  
   const recipes = await Recipe.find({ "ingredients.id": { $in: ingredientIds } });
-
+  
   res.status(200).json(recipes);
 };
 
