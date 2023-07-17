@@ -1,5 +1,7 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import queryString from "query-string";
+import axios from "axios";
 import { nanoid } from "nanoid";
 import { HttpError, ctrlWrapper } from "../helpers/index.js";
 import { User } from "../models/user.js";
@@ -7,7 +9,71 @@ import { sendEmail } from "../services/index.js";
 import dotenv from "dotenv";
 dotenv.config();
 
-const { ACCESS_SECRET_KEY, REFRESH_SECRET_KEY } = process.env;
+const { ACCESS_SECRET_KEY, REFRESH_SECRET_KEY, BASE_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } =
+  process.env;
+
+const googleAuth = async (req, res) => {
+  const stringifiedParams = queryString.stringify({
+    client_id: GOOGLE_CLIENT_ID,
+    redirect_uri: `${BASE_URL}api/auth/googleRedirect`,
+    scope: [
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/userinfo.profile",
+    ].join(" "),
+    response_type: "code",
+    access_type: "offline",
+    prompt: "consent",
+  });
+  return res.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${stringifiedParams}`);
+};
+
+const googleRedirect = async (req, res) => {
+  const fullUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
+  const urlObj = new URL(fullUrl);
+  const urlParams = queryString.parse(urlObj.search);
+  const code = urlParams.code;
+  const tokenData = await axios({
+    url: `https://oauth2.googleapis.com/token`,
+    method: "post",
+    data: {
+      client_id: GOOGLE_CLIENT_ID,
+      client_secret: GOOGLE_CLIENT_SECRET,
+      redirect_uri: `${BASE_URL}/auth/googleRedirect`,
+      grant_type: "authorization_code",
+      code,
+    },
+  });
+  const userData = await axios({
+    url: "https://www.googleapis.com/oauth2/v2/userinfo",
+    method: "get",
+    headers: {
+      Authorization: `Bearer ${tokenData.data.access_token}`,
+    },
+  });
+
+  const token = jwt.sign({ id: findUser._id }, ACCESS_SECRET_KEY, { expiresIn: "10h" });
+  const accessToken = jwt.sign({ id: findUser._id }, ACCESS_SECRET_KEY, { expiresIn: "2m" });
+  const refreshToken = jwt.sign({ id: findUser._id }, REFRESH_SECRET_KEY, { expiresIn: "7d" });
+
+  const findUser = await User.findOne({ email: userData.data.email });
+  if (findUser)
+    return res.redirect(
+      `https://tsylepa.github.io/Yummy/googleRedirect?token=${token}&accessToken=${accessToken}&refreshToken=${refreshToken}`
+    );
+
+  await User.create({
+    name: userData.data.name,
+    email: userData.data.email,
+    password: "Google",
+    verificationCode: "",
+    verifiedEmail: true,
+    token,
+    accessToken,
+    refreshToken,
+  });
+
+  return res.redirect(`${FRONTEND_URL}?token=${token}`);
+};
 
 const register = async (req, res) => {
   const { email, password } = req.body;
@@ -110,6 +176,8 @@ const logout = async (req, res) => {
 };
 
 export const ctrl = {
+  googleAuth: ctrlWrapper(googleAuth),
+  googleRedirect: ctrlWrapper(googleRedirect),
   register: ctrlWrapper(register),
   verifyEmail: ctrlWrapper(verifyEmail),
   login: ctrlWrapper(login),

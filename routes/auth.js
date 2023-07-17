@@ -6,6 +6,10 @@ import { authenticate } from "../middlewares/index.js";
 
 export const authRouter = express.Router();
 
+authRouter.post("/google", ctrl.googleAuth);
+
+authRouter.post("/googleRedirect", ctrl.googleRedirect);
+
 authRouter.post("/register", validateBody(schemas.registerSchema), ctrl.register);
 
 authRouter.post("/verifyEmail/:verificationCode", ctrl.verifyEmail);
