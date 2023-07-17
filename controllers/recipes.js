@@ -24,10 +24,9 @@ const getRecipeById = async (req, res) => {
   const updatedIngredients = recipe.ingredients.map((ingredient) => {
     const matchingIngredient = ingredients.find((item) => item._id.toString() === ingredient.id);
     return {
-      id: matchingIngredient._id,
-      measure: ingredient.measure,
-      ...matchingIngredient
-    };
+...matchingIngredient,
+      measure: ingredient.measure
+          };
   });
 
   recipe.ingredients = updatedIngredients;
