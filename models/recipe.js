@@ -51,6 +51,10 @@ const recipeSchema = new Schema(
       type: [Object],
       required: true,
     },
+    popularity: {
+      type: Number,
+      default: 0,
+    },
   },
   { versionKey: false, timestamps: false }
 );

@@ -14,18 +14,18 @@ const getRecipeById = async (req, res) => {
   const recipe = await Recipe.findById(recipeId).lean();
 
   if (!recipe) {
-    return res.status(404).json({ message: 'The recipe is not found' });
+    return res.status(404).json({ message: "The recipe is not found" });
   }
 
-  const ingredientIds = recipe.ingredients.map((ingredient) => ingredient.id);
+  const ingredientIds = recipe.ingredients.map(ingredient => ingredient.id);
 
   const ingredients = await Ingredient.find({ _id: { $in: ingredientIds } }).lean();
 
-  const updatedIngredients = recipe.ingredients.map((ingredient) => {
-    const matchingIngredient = ingredients.find((item) => item._id.toString() === ingredient.id);
+  const updatedIngredients = recipe.ingredients.map(ingredient => {
+    const matchingIngredient = ingredients.find(item => item._id.toString() === ingredient.id);
     return {
       ...matchingIngredient,
-      measure: ingredient.measure
+      measure: ingredient.measure,
     };
   });
 
@@ -53,10 +53,7 @@ const getRecipesByTitle = async (req, res) => {
   const title = req.params.title;
   const regex = new RegExp(title, "i");
 
-  const recipes = await Recipe.find(
-    { title: { $regex: regex } },
-    { _id: 0 }
-  ).lean();
+  const recipes = await Recipe.find({ title: { $regex: regex } }, { _id: 0 }).lean();
 
   res.status(200).json(recipes);
 };
@@ -66,11 +63,11 @@ const getRecipesByIngredientName = async (req, res) => {
 
   const regex = new RegExp(ingredientName, "i");
   const ingredients = await Ingredient.find({ name: { $regex: regex } });
-  
+
   const ingredientIds = ingredients.map(ingredient => ingredient.id);
-  
+
   const recipes = await Recipe.find({ "ingredients.id": { $in: ingredientIds } });
-  
+
   res.status(200).json(recipes);
 };
 
@@ -119,6 +116,14 @@ const deleteRecipeById = async (req, res) => {
   res.status(200).json({ message: "Recipe deleted" });
 };
 
+const getPopularRecipes = async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
+  const skip = (page - 1) * limit;
+  const recipes = await Recipe.find().sort({ popularity: -1 }).skip(skip).limit(limit);
+
+  res.status(200).json(recipes);
+};
+
 export const ctrl = {
   getRecipes: ctrlWrapper(getRecipes),
   getRecipeById: ctrlWrapper(getRecipeById),
@@ -128,4 +133,5 @@ export const ctrl = {
   getRecipesByIngredientName: ctrlWrapper(getRecipesByIngredientName),
   addRecipe: ctrlWrapper(addRecipe),
   deleteRecipeById: ctrlWrapper(deleteRecipeById),
+  getPopularRecipes: ctrlWrapper(getPopularRecipes),
 };
