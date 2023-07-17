@@ -5,15 +5,11 @@
     "title": "SoYummy",
     "description": "SoYummy backend documentation"
   },
-  "consumes": [
-    "application/json"
-  ],
-  "produces": [
-    "application/json"
-  ],
+  "consumes": ["application/json", "multipart/form-data"],
+  "produces": ["application/json"],
   "servers": [
     {
-      "url": "http://localhost:3000"
+      "url": "http://localhost:3000/api-docs"
     },
     {
       "url": "https://soyummy-backend-kmc6.onrender.com/"
@@ -57,15 +53,9 @@
     "/api/auth/register": {
       "post": {
         "summary": "Register new user",
-        "tags": [
-          "Auth"
-        ],
-        "security": [
-          {
-            "Bearer": []
-          }
-        ],
+        "tags": ["Auth"],
         "requestBody": {
+          "description": "User's register data",
           "required": true,
           "content": {
             "application/json": {
@@ -102,6 +92,7 @@
         "summary": "Login user",
         "tags": ["Auth"],
         "requestBody": {
+          "description": "User's login data",
           "required": true,
           "content": {
             "application/json": {
@@ -135,10 +126,9 @@
     },
     "/api/auth/logout": {
       "post": {
+        "security": [{ "Bearer": [] }],
         "summary": "User's logout",
-        "tags": [
-          "Auth"
-        ],
+        "tags": ["Auth"],
         "parameters": [
           {
             "name": "Authorization Token",
@@ -163,10 +153,9 @@
     },
     "/api/users/current": {
       "get": {
+        "security": [{ "Bearer": [] }],
         "summary": "Check user",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "parameters": [
           {
             "name": "Authorization",
@@ -199,10 +188,9 @@
     },
     "/api/users/changeName": {
       "patch": {
+        "security": [{ "Bearer": [] }],
         "summary": "Update user's name",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "parameters": [
           {
             "name": "Authorization Token",
@@ -213,19 +201,10 @@
               "type": "string",
               "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OTQyYjI4MzEyY2YzYWJlYTExNjMzNCIsImlhdCI6MTY4NzQzMjM1MSwiZXhwIjoxNjg3NTE4NzUxfQ.DCEB2Q0lghWYieYxiZohu4uMMpwMYFa55XOqMgggVVg"
             }
-          },
-          {
-            "name": "userId",
-            "in": "path",
-            "description": "User ID",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "649885bb8cfd32ed13fd42d3"
-            }
           }
         ],
         "requestBody": {
+          "description": "User's name",
           "required": true,
           "content": {
             "application/json": {
@@ -242,6 +221,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "type": "object",
                   "$ref": "#/components/schemas/UserResponse"
                 }
               }
@@ -261,11 +241,18 @@
     },
     "/api/users/changeAvatar": {
       "patch": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
+        "security": [{ "Bearer": [] }],
+        "parameters": {
+          "in": "path",
+          "name": "",
+          "required": true,
+          "description": ""
+        },
         "summary": "Update user's avatar",
         "requestBody": {
+          "description": "User's avatar",
+          "required": true,
           "content": {
             "multipart/form-data": {
               "schema": {
@@ -273,6 +260,7 @@
                 "properties": {
                   "file": {
                     "type": "string",
+                    "description": "User's avatar",
                     "format": "binary"
                   }
                 }
@@ -286,6 +274,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "type": "object",
                   "$ref": "#/components/schemas/UserResponse"
                 }
               }
@@ -305,10 +294,9 @@
     },
     "/api/users/changeTheme": {
       "patch": {
+        "security": [{ "Bearer": [] }],
         "summary": "Update user's theme",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "parameters": [
           {
             "name": "Authorization Token",
@@ -319,19 +307,10 @@
               "type": "string",
               "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OTQyYjI4MzEyY2YzYWJlYTExNjMzNCIsImlhdCI6MTY4NzQzMjM1MSwiZXhwIjoxNjg3NTE4NzUxfQ.DCEB2Q0lghWYieYxiZohu4uMMpwMYFa55XOqMgggVVg"
             }
-          },
-          {
-            "name": "Theme",
-            "in": "path",
-            "description": "User's theme",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "light"
-            }
           }
         ],
         "requestBody": {
+          "description": "User's theme",
           "required": true,
           "content": {
             "application/json": {
@@ -348,6 +327,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "type": "object",
                   "$ref": "#/components/schemas/UserResponse"
                 }
               }
@@ -368,13 +348,16 @@
     "/api/subscribe": {
       "get": {
         "tags": ["Subscribe"],
+        "security": [{ "Bearer": [] }],
         "summary": "Subscribe to newsletter",
         "parameters": [],
         "requestBody": {
+          "description": "User's subscription",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
+                "type": "object",
                 "$ref": "#/components/schemas/SubscribeRequest"
               }
             }
@@ -400,8 +383,9 @@
       }
     },
     "/api/subscribe/confirm/{userId}": {
-      "get": {  
+      "get": {
         "tags": ["Subscribe"],
+        "security": [{ "Bearer": [] }],
         "summary": "Confirm subscription",
         "parameters": [
           {
@@ -411,6 +395,13 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "description": "User Id is necessary to confirm subscription",
+            "example": "640c2dd963a319ea671e378b"
           }
         ],
         "responses": {
@@ -425,8 +416,9 @@
     },
     "/api/mainPage": {
       "get": {
+        "security": [{ "Bearer": [] }],
         "summary": "Get 4 categories with 4 recipes",
-        "tags": [          "Recipes"        ],
+        "tags": ["Recipes"],
         "parameters": [
           {
             "name": "Authorization Token",
@@ -445,7 +437,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
+                  "type": "object",
                   "$ref": "#/components/schemas/MainPageResponse"
                 }
               }
@@ -459,8 +451,9 @@
     },
     "/api/recipes": {
       "get": {
+        "security": [{ "Bearer": [] }],
         "summary": "Get all recipes",
-        "tags": [          "Recipes"        ],
+        "tags": ["Recipes"],
         "parameters": [
           {
             "name": "Authorization Token",
@@ -491,10 +484,9 @@
         }
       },
       "post": {
+        "security": [{ "Bearer": [] }],
         "summary": "Add new recipe",
-        "tags": [
-          "Recipes"
-        ],
+        "tags": ["Recipes"],
         "parameters": [
           {
             "name": "Authorization Token",
@@ -508,12 +500,15 @@
           }
         ],
         "requestBody": {
+          "description": "The recipe made by user (form-data)",
           "required": true,
           "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "$ref": "#/components/schemas/AddingNewRecipeRequest"
+            "multipart/form-data": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/AddNewRecipeRequest"
+                }
               }
             }
           }
@@ -525,7 +520,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "$ref": "#/components/schemas/AddingNewRecipeResponse"
+                  "$ref": "#/components/schemas/AddNewRecipeResponse"
                 }
               }
             }
@@ -539,12 +534,43 @@
         }
       }
     },
+    "/api/recipes/popular": {
+      "get": {
+        "security": [{ "Bearer": [] }],
+        "summary": "Get popular recipes",
+        "parameters": {
+          "name": "Authorization Token",
+          "in": "header",
+          "description": "User authorization token",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YThmNGQ2ZTI0YjNlNDJmNzg5MDgyNyIsImlhdCI6MTY4ODg5NjUyNywiZXhwIjoxNjg4OTMyNTI3fQ.43qk7STIlTK8DRgoBu6wwaMmaVAWe0C8dX0aZ4LG3hU"
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/OneRecipeResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem with Authorization missing header, invalid token"
+          }
+        }
+      }
+    },
     "/api/recipes/{recipeId}": {
       "get": {
+        "security": [{ "Bearer": [] }],
         "summary": "Get recipe by Id",
-        "tags": [
-          "Recipes"
-        ],
+        "tags": ["Recipes"],
         "parameters": [
           {
             "name": "Authorization Token",
@@ -573,7 +599,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
+                  "type": "object",
                   "$ref": "#/components/schemas/OneRecipeResponse"
                 }
               }
@@ -585,10 +611,9 @@
         }
       },
       "delete": {
+        "security": [{ "Bearer": [] }],
         "summary": "Delete recipe",
-        "tags": [
-          "Recipes"
-        ],
+        "tags": ["Recipes"],
         "parameters": [
           {
             "name": "Authorization Token",
@@ -638,8 +663,9 @@
     },
     "/api/recipes/ingredients/{ingredientName}": {
       "get": {
+        "security": [{ "Bearer": [] }],
         "summary": "Get recipes by this ingredient name",
-        "tags": [          "Recipes"        ],
+        "tags": ["Recipes"],
         "parameters": [
           {
             "name": "Authorization Token",
@@ -684,10 +710,9 @@
     },
     "/api/recipes/categories/{category}": {
       "get": {
+        "security": [{ "Bearer": [] }],
         "summary": "Get recipes by this category",
-        "tags": [
-          "Recipes"
-        ],
+        "tags": ["Recipes"],
         "parameters": [
           {
             "name": "Authorization Token",
@@ -700,13 +725,34 @@
             }
           },
           {
-            "name": "Category name",
+            "name": "category",
             "in": "path",
             "description": "Category name",
             "required": true,
             "schema": {
               "type": "string",
               "example": "Beef"
+            }
+          }, 
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 8
             }
           }
         ],
@@ -730,10 +776,9 @@
     },
     "/api/recipes/search/{title}": {
       "get": {
+        "security": [{ "Bearer": [] }],
         "summary": "Get recipes by this title",
-        "tags": [
-          "Recipes"
-        ],
+        "tags": ["Recipes"],
         "parameters": [
           {
             "name": "Authorization Token",
@@ -746,7 +791,7 @@
             }
           },
           {
-            "name": "Title",
+            "name": "title",
             "in": "path",
             "description": "Title",
             "required": true,
@@ -776,10 +821,9 @@
     },
     "/api/categoryList": {
       "get": {
+        "security": [{ "Bearer": [] }],
         "summary": "Get all categories",
-        "tags": [
-          "Categories"
-        ],
+        "tags": ["Categories"],
         "parameters": [
           {
             "name": "Authorization Token",
@@ -812,10 +856,9 @@
     },
     "/api/ingredients": {
       "get": {
+        "security": [{ "Bearer": [] }],
         "summary": "Get all ingredients",
-        "tags": [
-          "Search ingredients"
-        ],
+        "tags": ["Search ingredients"],
         "parameters": [
           {
             "name": "Authorization Token",
@@ -848,10 +891,9 @@
     },
     "/api/favorite/": {
       "get": {
+        "security": [{ "Bearer": [] }],
         "summary": "Get all favorite recipes",
-        "tags": [
-          "Favorites"
-        ],
+        "tags": ["Favorites"],
         "parameters": [
           {
             "name": "Authorization Token",
@@ -870,7 +912,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
+                  "type": "object",
                   "$ref": "#/components/schemas/FavoriteResponse"
                 }
               }
@@ -884,10 +926,9 @@
     },
     "/api/favorite/{recipeId}": {
       "post": {
+        "security": [{ "Bearer": [] }],
         "summary": "Add recipe to favorites",
-        "tags": [
-          "Favorites"
-        ],
+        "tags": ["Favorites"],
         "parameters": [
           {
             "name": "Authorization Token",
@@ -935,10 +976,9 @@
         }
       },
       "delete": {
+        "security": [{ "Bearer": [] }],
         "summary": "Delete recipe from favorites",
-        "tags": [
-          "Favorites"
-        ],
+        "tags": ["Favorites"],
         "parameters": [
           {
             "name": "Authorization Token",
@@ -988,10 +1028,9 @@
     },
     "/api/ownRecipes": {
       "get": {
+        "security": [{ "Bearer": [] }],
         "summary": "Get all recipes that were created by user",
-        "tags": [
-          "Own recipes"
-        ],
+        "tags": ["Own recipes"],
         "parameters": [
           {
             "name": "Authorization Token",
@@ -1010,7 +1049,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
+                  "type": "object",
                   "$ref": "#/components/schemas/OwnRecipesResponse"
                 }
               }
@@ -1024,15 +1063,16 @@
     },
     "/api/shoppingList": {
       "post": {
+        "security": [{ "Bearer": [] }],
         "summary": "Add ingredient to shopping list",
-        "tags": [
-          "Shopping list"
-        ],
+        "tags": ["Shopping list"],
         "requestBody": {
+          "description": "The added ingredient to the shopping list",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
+                "type": "object",
                 "$ref": "#/components/schemas/AddShoppingListRequest"
               }
             }
@@ -1087,18 +1127,29 @@
         }
       },
       "delete": {
+        "security": [{ "Bearer": [] }],
         "summary": "Remove ingredient from shopping list",
-         "tags": [
-          "Shopping list"
-        ],
+        "tags": ["Shopping list"],
         "requestBody": {
+          "description": "The removed ingredient from the shopping list",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
+                "type": "object",
                 "$ref": "#/components/schemas/RemoveShoppingListRequest"
               }
             }
+          },
+          "exapmle": {
+            "ingredient": {
+              "_id": "640c2dd963a319ea671e366d",
+              "name": "Beef Fillet",
+              "desc": "Beef is the culinary name for meat from cattle, particularly skeletal …",
+              "img": "https://res.cloudinary.com/ddbvbv5sp/image/upload/v1678564216/zuhii6vl…"
+            },
+            "recipeId": "640c2dd963a319ea671e366d",
+            "measure": "2 g"
           }
         },
         "responses": {
@@ -1145,11 +1196,7 @@
             "example": "pwd1234567"
           }
         },
-        "required": [
-          "name",
-          "email",
-          "password"
-        ]
+        "required": ["name", "email", "password"]
       },
       "LoginRequest": {
         "type": "object",
@@ -1168,10 +1215,7 @@
             "example": "pwd1234567"
           }
         },
-        "required": [
-          "email",
-          "password"
-        ]
+        "required": ["email", "password"]
       },
       "UserResponse": {
         "type": "object",
@@ -1213,10 +1257,7 @@
           },
           "theme": {
             "type": "string",
-            "enum": [
-              "light",
-              "dark"
-            ],
+            "enum": ["light", "dark"],
             "description": "User's theme",
             "example": "dark"
           },
@@ -1529,7 +1570,7 @@
           }
         }
       },
-      "AddingNewRecipeRequest": {
+      "AddNewRecipeRequest": {
         "type": "object",
         "properties": {
           "title": {
@@ -1603,6 +1644,7 @@
           },
           "file": {
             "type": "string",
+            "description": "User's avatar",
             "format": "binary"
           }
         },
@@ -1616,7 +1658,7 @@
           "ingredients"
         ]
       },
-      "AddingNewRecipeResponse": {
+      "AddNewRecipeResponse": {
         "type": "object",
         "properties": {
           "_id": {
@@ -1702,7 +1744,7 @@
           }
         }
       },
-      "AddingRecipeToFavoriteRequest": {
+      "AddRecipeToFavoriteRequest": {
         "type": "object",
         "properties": {
           "_id": {
@@ -1711,9 +1753,7 @@
             "example": "640c2dd963a319ea671e378b"
           }
         },
-        "required": [
-          "_id"
-        ]
+        "required": ["_id"]
       },
       "FavoriteResponse": {
         "type": "object",
@@ -1837,10 +1877,7 @@
                     "preview": "https://res.cloudinary.com/ddbvbv5sp/image/upload/v1678560404/emwrgaeprvxwucd9oxq7.jpg",
                     "time": "80",
                     "youtube": "https://www.youtube.com/watch?v=-CKvt1KNU74",
-                    "tags": [
-                      "Spicy",
-                      "Meat"
-                    ],
+                    "tags": ["Spicy", "Meat"],
                     "ingredients": [
                       {
                         "id": "640c2dd963a319ea671e3714",
@@ -1903,9 +1940,7 @@
                     "preview": "https://res.cloudinary.com/ddbvbv5sp/image/upload/v1678560401/nl3ks6ugu4uafh8fp4ot.jpg",
                     "time": "20",
                     "youtube": "https://www.youtube.com/watch?v=Ohy1DELF4is",
-                    "tags": [
-                      "Pasta"
-                    ],
+                    "tags": ["Pasta"],
                     "ingredients": [
                       {
                         "id": "640c2dd963a319ea671e3755",
@@ -2015,10 +2050,7 @@
                     "preview": "https://res.cloudinary.com/ddbvbv5sp/image/upload/v1678560401/g7gww5fdeu7kjti0fk7s.jpg",
                     "time": "75",
                     "youtube": "https://www.youtube.com/watch?v=4aZr5hZXP_s",
-                    "tags": [
-                      "Meat",
-                      "Casserole"
-                    ],
+                    "tags": ["Meat", "Casserole"],
                     "ingredients": [
                       {
                         "id": "640c2dd963a319ea671e376c",
@@ -2071,11 +2103,7 @@
                     "preview": "https://res.cloudinary.com/ddbvbv5sp/image/upload/v1678560402/rlmbsnwkv0dhuj2rfufs.jpg",
                     "time": "20",
                     "youtube": "https://www.youtube.com/watch?v=UVAMAoA2_WU",
-                    "tags": [
-                      "UnHealthy",
-                      "Speciality",
-                      "HangoverFood"
-                    ],
+                    "tags": ["UnHealthy", "Speciality", "HangoverFood"],
                     "ingredients": [
                       {
                         "id": "640c2dd963a319ea671e3789",
@@ -2141,9 +2169,7 @@
                     "preview": "https://res.cloudinary.com/ddbvbv5sp/image/upload/v1678560539/qgdrj0bpsq620wguboai.jpg",
                     "time": "75",
                     "youtube": "https://www.youtube.com/watch?v=mTvlmY4vCug",
-                    "tags": [
-                      "Alcoholic"
-                    ],
+                    "tags": ["Alcoholic"],
                     "ingredients": [
                       {
                         "id": "640c2dd963a319ea671e372c",
@@ -2202,9 +2228,7 @@
                     "preview": "https://res.cloudinary.com/ddbvbv5sp/image/upload/v1678560536/ukkbq6t4w0tenbnypu3g.jpg",
                     "time": "40",
                     "youtube": "https://www.youtube.com/watch?v=CrlTS1mJQMA",
-                    "tags": [
-                      "Pulse"
-                    ],
+                    "tags": ["Pulse"],
                     "ingredients": [
                       {
                         "id": "640c2dd963a319ea671e372c",
@@ -2253,10 +2277,7 @@
                     "preview": "https://res.cloudinary.com/ddbvbv5sp/image/upload/v1678561436/lj4kfx1zh4l8vejsgdle.jpg",
                     "time": "20",
                     "youtube": "",
-                    "tags": [
-                      "Breakfast",
-                      "Summer"
-                    ],
+                    "tags": ["Breakfast", "Summer"],
                     "ingredients": [
                       {
                         "id": "640c2dd963a319ea671e379c",
@@ -2303,11 +2324,7 @@
                     "preview": "https://res.cloudinary.com/ddbvbv5sp/image/upload/v1678561362/zajgrwsrjx6jsdq5gnkz.jpg",
                     "time": "25",
                     "youtube": "https://www.youtube.com/watch?v=QqdzDCWS4gQ",
-                    "tags": [
-                      "Brunch",
-                      "Fish",
-                      "Fusion"
-                    ],
+                    "tags": ["Brunch", "Fish", "Fusion"],
                     "ingredients": [
                       {
                         "id": "640c2dd963a319ea671e367e",
@@ -2370,9 +2387,7 @@
                     "preview": "https://res.cloudinary.com/ddbvbv5sp/image/upload/v1678560624/cnkpymzd18llmlc9pedc.jpg",
                     "time": "51",
                     "youtube": "https://www.youtube.com/watch?v=FXjYU2Ensck",
-                    "tags": [
-                      "Breakfast"
-                    ],
+                    "tags": ["Breakfast"],
                     "ingredients": [
                       {
                         "id": "640c2dd963a319ea671e3760",
@@ -2415,11 +2430,7 @@
                     "preview": "https://res.cloudinary.com/ddbvbv5sp/image/upload/v1678561362/y4tsueffxblvgpezzcnh.jpg",
                     "time": "35",
                     "youtube": "https://www.youtube.com/watch?v=BoD0TIO9nE4",
-                    "tags": [
-                      "Breakfast",
-                      "Brunch",
-                      ""
-                    ],
+                    "tags": ["Breakfast", "Brunch", ""],
                     "ingredients": [
                       {
                         "id": "640c2dd963a319ea671e3746",
@@ -2472,13 +2483,7 @@
                     "preview": "https://res.cloudinary.com/ddbvbv5sp/image/upload/v1678560536/xdb5jf594uog1izlperm.jpg",
                     "time": "195",
                     "youtube": "https://www.youtube.com/watch?v=tspdJ6hxqnc",
-                    "tags": [
-                      "Desert",
-                      "Dairy",
-                      "Pudding",
-                      "Cake",
-                      "Breakfast"
-                    ],
+                    "tags": ["Desert", "Dairy", "Pudding", "Cake", "Breakfast"],
                     "ingredients": [
                       {
                         "id": "640c2dd963a319ea671e367e",
@@ -2525,13 +2530,7 @@
                     "preview": "https://res.cloudinary.com/ddbvbv5sp/image/upload/v1678560628/dtnw1ya0zcmlyxw8rw8j.jpg",
                     "time": "211",
                     "youtube": "https://www.youtube.com/watch?v=q4Rz7tUkX9A",
-                    "tags": [
-                      "Cake",
-                      "Pie",
-                      "Desert",
-                      "Fruity",
-                      "Sour"
-                    ],
+                    "tags": ["Cake", "Pie", "Desert", "Fruity", "Sour"],
                     "ingredients": [
                       {
                         "id": "640c2dd963a319ea671e36c0",
@@ -2574,11 +2573,7 @@
                     "preview": "https://res.cloudinary.com/ddbvbv5sp/image/upload/v1678560408/lygbfa7j94dgegmvnpas.jpg",
                     "time": "85",
                     "youtube": "https://www.youtube.com/watch?v=1ahpSTf_Pvk",
-                    "tags": [
-                      "Tart",
-                      "Baking",
-                      "Alcoholic"
-                    ],
+                    "tags": ["Tart", "Baking", "Alcoholic"],
                     "ingredients": [
                       {
                         "id": "640c2dd963a319ea671e3743",
@@ -2633,12 +2628,7 @@
                     "preview": "https://res.cloudinary.com/ddbvbv5sp/image/upload/v1678560630/udf2g6mv8gm0eqvqylha.jpg",
                     "time": "60",
                     "youtube": "https://www.youtube.com/watch?v=kniRGjDLFrQ",
-                    "tags": [
-                      "Desert",
-                      "Summer",
-                      "Fruity",
-                      "Dairy"
-                    ],
+                    "tags": ["Desert", "Summer", "Fruity", "Dairy"],
                     "ingredients": [
                       {
                         "id": "640c2dd963a319ea671e380c",
@@ -2716,9 +2706,7 @@
           "preview": "https://res.cloudinary.com/ddbvbv5sp/image/upload/v1678561359/glcs6gsdfeb35gxwjj6n.jpg",
           "time": "20",
           "youtube": "https://www.youtube.com/watch?v=PnXft7lQNJE",
-          "tags": [
-            "Christmas"
-          ],
+          "tags": ["Christmas"],
           "ingredients": [
             {
               "id": "640c2dd963a319ea671e367e",
@@ -2847,14 +2835,28 @@
           },
           "recipeId": "640c2dd963a319ea671e366d"
         }
+      },
+      "SubscribeRequest": {
+        "type": "object",
+        "properties": {
+          "subscribe": {
+            "type": "boolean",
+            "required": true,
+            "description": "Subscription agreement",
+            "example": {
+              "subscribe": false
+            }
+          }
+        }
       }
+      
     },
     "securitySchemas": {
-      "Bearer": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
+        "Bearer": {
+          "type": "http",
+          "scheme": "bearer",
+          "bearerFormat": "JWT"
+        }
       }
-    }
   }
 }
