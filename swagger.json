@@ -537,17 +537,41 @@
     "/api/recipes/popular": {
       "get": {
         "security": [{ "Bearer": [] }],
+        "tags":["Popular recipes"],
         "summary": "Get popular recipes",
-        "parameters": {
-          "name": "Authorization Token",
-          "in": "header",
-          "description": "User authorization token",
-          "required": true,
-          "schema": {
+        "parameters": [
+          {
+            "name": "Authorization Token",
+            "in": "header",
+            "description": "User authorization token",
+            "required": true,
+            "schema": {
             "type": "string",
             "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YThmNGQ2ZTI0YjNlNDJmNzg5MDgyNyIsImlhdCI6MTY4ODg5NjUyNywiZXhwIjoxNjg4OTMyNTI3fQ.43qk7STIlTK8DRgoBu6wwaMmaVAWe0C8dX0aZ4LG3hU"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10
+            }
           }
-        },
+        ],
         "responses": {
           "200": {
             "description": "Successful request",
@@ -1176,6 +1200,7 @@
     "schemas": {
       "RegistrationRequest": {
         "type": "object",
+        "required": ["name", "email", "password"],
         "properties": {
           "name": {
             "type": "string",
@@ -1195,11 +1220,11 @@
             "description": "User's password",
             "example": "pwd1234567"
           }
-        },
-        "required": ["name", "email", "password"]
+        }
       },
       "LoginRequest": {
         "type": "object",
+        "required": ["email", "password"],
         "properties": {
           "email": {
             "type": "string",
@@ -1214,14 +1239,14 @@
             "description": "User's password",
             "example": "pwd1234567"
           }
-        },
-        "required": ["email", "password"]
+        }
       },
       "UserResponse": {
         "type": "object",
         "properties": {
           "email": {
             "type": "string",
+            "format":"email",
             "required": true
           },
           "password": {
@@ -1572,6 +1597,15 @@
       },
       "AddNewRecipeRequest": {
         "type": "object",
+        "required": [
+          "title",
+          "thumb",
+          "category",
+          "instructions",
+          "description",
+          "time",
+          "ingredients"
+        ],
         "properties": {
           "title": {
             "type": "string",
@@ -1647,16 +1681,7 @@
             "description": "User's avatar",
             "format": "binary"
           }
-        },
-        "required": [
-          "title",
-          "thumb",
-          "category",
-          "instructions",
-          "description",
-          "time",
-          "ingredients"
-        ]
+        }        
       },
       "AddNewRecipeResponse": {
         "type": "object",
@@ -1746,14 +1771,15 @@
       },
       "AddRecipeToFavoriteRequest": {
         "type": "object",
+        "required": ["_id"],
         "properties": {
           "_id": {
             "type": "string",
             "description": "Recipe ID",
             "example": "640c2dd963a319ea671e378b"
           }
-        },
-        "required": ["_id"]
+        }
+
       },
       "FavoriteResponse": {
         "type": "object",
@@ -1767,8 +1793,8 @@
             }
           },
           "total": {
-            "type": "Number",
-            "description": "The total Number of the favorite recipes",
+            "type": "integer",
+            "description": "The total number of the favorite recipes",
             "example": 1
           }
         },
@@ -2684,17 +2710,22 @@
       },
       "ChangeNameRequest": {
         "type": "object",
+        "required": ["name"],
         "properties": {
           "name": {
             "type": "string",
             "description": "User's name",
             "example": "Jerome"
           }
-        },
-        "required": "name"
+        }       
       },
       "OneRecipeResponse": {
         "type": "object",
+        "properties": {
+          "type": "object",
+          "description": "One recipe with all the ingredients"
+
+        },
         "example": {
           "_id": "6462a8f74c3d0ddd2889807e",
           "title": "Mince Pies",
@@ -2761,17 +2792,18 @@
       },
       "ChangeThemeRequest": {
         "type": "object",
+        "required": ["theme"],
         "properties": {
           "theme": {
             "type": "string",
             "description": "User's theme",
             "example": "dark"
           }
-        },
-        "required": "theme"
+        }
       },
       "AddShoppingListRequest": {
         "type": "object",
+        "required": ["ingredient", "recipeId", "measure"],
         "properties": {
           "ingredient": {
             "type": "object",
@@ -2812,6 +2844,7 @@
       },
       "RemoveShoppingListRequest": {
         "type": "object",
+        "required": ["ingredient", "recipeId"],
         "properties": {
           "ingredient": {
             "type": "object",
@@ -2838,6 +2871,7 @@
       },
       "SubscribeRequest": {
         "type": "object",
+        "required": ["subscribe"],
         "properties": {
           "subscribe": {
             "type": "boolean",
@@ -2851,7 +2885,7 @@
       }
       
     },
-    "securitySchemas": {
+    "securitySchemes": {
         "Bearer": {
           "type": "http",
           "scheme": "bearer",
