@@ -51,28 +51,33 @@ const googleRedirect = async (req, res) => {
     },
   });
 
-  const token = jwt.sign({ id: findUser._id }, ACCESS_SECRET_KEY, { expiresIn: "10h" });
-  const accessToken = jwt.sign({ id: findUser._id }, ACCESS_SECRET_KEY, { expiresIn: "2m" });
-  const refreshToken = jwt.sign({ id: findUser._id }, REFRESH_SECRET_KEY, { expiresIn: "7d" });
-
   const findUser = await User.findOne({ email: userData.data.email });
-  if (findUser)
+  if (findUser) {
+    const accessToken = jwt.sign({ id: findUser._id }, ACCESS_SECRET_KEY, { expiresIn: "5m" });
+    const refreshToken = jwt.sign({ id: findUser._id }, REFRESH_SECRET_KEY, { expiresIn: "7d" });
     return res.redirect(
-      `https://tsylepa.github.io/Yummy/googleRedirect?token=${token}&accessToken=${accessToken}&refreshToken=${refreshToken}`
+      `https://tsylepa.github.io/Yummy/googleRedirect?accessToken=${accessToken}&refreshToken=${refreshToken}`
     );
+  }
 
-  await User.create({
+  const newUSer = await User.create({
     name: userData.data.name,
     email: userData.data.email,
     password: "Google",
     verificationCode: "",
     verifiedEmail: true,
-    token,
-    accessToken,
-    refreshToken,
+    accessToken: "",
+    refreshToken: "",
   });
 
-  return res.redirect(`${FRONTEND_URL}?token=${token}`);
+  const accessToken = jwt.sign({ id: findUser._id }, ACCESS_SECRET_KEY, { expiresIn: "5m" });
+  const refreshToken = jwt.sign({ id: findUser._id }, REFRESH_SECRET_KEY, { expiresIn: "7d" });
+
+  await User.findByIdAndUpdate(newUSer._id, { accessToken, refreshToken });
+
+  return res.redirect(
+    `http://localhost:3000?accessToken=${accessToken}&refreshToken=${refreshToken}`
+  );
 };
 
 const register = async (req, res) => {
