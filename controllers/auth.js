@@ -102,12 +102,11 @@ const verifyEmail = async (req, res) => {
     throw HttpError(401, "User not found");
   }
 
-  const token = jwt.sign({ id: findUser._id }, ACCESS_SECRET_KEY, { expiresIn: "10h" });
-  const accessToken = jwt.sign({ id: findUser._id }, ACCESS_SECRET_KEY, { expiresIn: "2m" });
+  const accessToken = jwt.sign({ id: findUser._id }, ACCESS_SECRET_KEY, { expiresIn: "5s" });
   const refreshToken = jwt.sign({ id: findUser._id }, REFRESH_SECRET_KEY, { expiresIn: "7d" });
   const user = await User.findByIdAndUpdate(
     findUser._id,
-    { verifiedEmail: true, verificationCode: "", token, accessToken, refreshToken },
+    { verifiedEmail: true, verificationCode: "", accessToken, refreshToken },
     { new: true }
   );
 
@@ -121,23 +120,23 @@ const login = async (req, res) => {
   const { email, password } = req.body;
   const findUser = await User.findOne({ email });
   if (!findUser) {
-    throw HttpError(401, "Email or password invalid");
+    throw HttpError(403, "Email or password invalid");
   }
-  // if (!findUser.verifiedEmail) {
-  //   throw HttpError(401, "Email is not verified");
-  // }
+  if (!findUser.verifiedEmail) {
+    throw HttpError(401, "Email is not verified");
+  }
 
   const passwordCompare = await bcrypt.compare(password, findUser.password);
+
   if (!passwordCompare) {
-    throw HttpError(401, "Email or password invalid");
+    throw HttpError(403, "Email or password invalid");
   }
 
-  const token = jwt.sign({ id: findUser._id }, ACCESS_SECRET_KEY, { expiresIn: "10h" });
-  const accessToken = jwt.sign({ id: findUser._id }, ACCESS_SECRET_KEY, { expiresIn: "2m" });
+  const accessToken = jwt.sign({ id: findUser._id }, ACCESS_SECRET_KEY, { expiresIn: "5s" });
   const refreshToken = jwt.sign({ id: findUser._id }, REFRESH_SECRET_KEY, { expiresIn: "7d" });
   const user = await User.findByIdAndUpdate(
     findUser._id,
-    { token, refreshToken, accessToken },
+    { refreshToken, accessToken },
     { new: true }
   );
 
@@ -157,9 +156,10 @@ const refreshToken = async (req, res) => {
       throw HttpError(403, "Token invalid");
     }
 
-    const accessToken = jwt.sign({ id }, ACCESS_SECRET_KEY, { expiresIn: "2m" });
+    const accessToken = jwt.sign({ id }, ACCESS_SECRET_KEY, { expiresIn: "5s" });
     const refreshToken = jwt.sign({ id }, REFRESH_SECRET_KEY, { expiresIn: "7d" });
-    await User.findByIdAndUpdate(id, { refreshToken, accessToken });
+
+    await User.findByIdAndUpdate(id, { accessToken, refreshToken });
 
     res.status(200).json({ accessToken, refreshToken });
   } catch (error) {
@@ -169,7 +169,7 @@ const refreshToken = async (req, res) => {
 
 const logout = async (req, res) => {
   const { _id } = req.user;
-  await User.findByIdAndUpdate(_id, { token: "", accessToken: "", refreshToken: "" });
+  await User.findByIdAndUpdate(_id, { accessToken: "", refreshToken: "" });
   res.json({
     message: "Logout success",
   });

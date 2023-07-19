@@ -29,7 +29,6 @@ const userSchema = new Schema(
       enum: ["light", "dark"],
     },
     subscribe: { type: Boolean, default: false },
-    token: { type: String, default: "" },
     accessToken: { type: String, default: "" },
     refreshToken: { type: String, default: "" },
     verificationCode: { type: String, default: "" },

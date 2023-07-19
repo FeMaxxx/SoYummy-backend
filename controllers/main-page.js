@@ -19,7 +19,6 @@ import { Recipe } from "../models/recipe.js";
 // };
 
 const getRecipesByCategories = async (req, res) => {
-  console.log("butterfly");
   const { page = 1, limit = 4 } = req.query;
   const skip = (page - 1) * limit;
 
@@ -27,11 +26,9 @@ const getRecipesByCategories = async (req, res) => {
 
   const recipesByCategories = {};
 
-  const recipesPromises = categories.map(async (category) => {
+  const recipesPromises = categories.map(async category => {
     const regexCategory = new RegExp(category, "i");
-    const recipes = await Recipe.find({ category: regexCategory })
-      .skip(skip)
-      .limit(limit);
+    const recipes = await Recipe.find({ category: regexCategory }).skip(skip).limit(limit);
     recipesByCategories[category] = recipes;
   });
 
