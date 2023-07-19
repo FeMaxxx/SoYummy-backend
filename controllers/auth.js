@@ -102,7 +102,7 @@ const verifyEmail = async (req, res) => {
     throw HttpError(401, "User not found");
   }
 
-  const accessToken = jwt.sign({ id: findUser._id }, ACCESS_SECRET_KEY, { expiresIn: "5s" });
+  const accessToken = jwt.sign({ id: findUser._id }, ACCESS_SECRET_KEY, { expiresIn: "5m" });
   const refreshToken = jwt.sign({ id: findUser._id }, REFRESH_SECRET_KEY, { expiresIn: "7d" });
   const user = await User.findByIdAndUpdate(
     findUser._id,
@@ -132,7 +132,7 @@ const login = async (req, res) => {
     throw HttpError(403, "Email or password invalid");
   }
 
-  const accessToken = jwt.sign({ id: findUser._id }, ACCESS_SECRET_KEY, { expiresIn: "5s" });
+  const accessToken = jwt.sign({ id: findUser._id }, ACCESS_SECRET_KEY, { expiresIn: "5m" });
   const refreshToken = jwt.sign({ id: findUser._id }, REFRESH_SECRET_KEY, { expiresIn: "7d" });
   const user = await User.findByIdAndUpdate(
     findUser._id,
@@ -156,7 +156,7 @@ const refreshToken = async (req, res) => {
       throw HttpError(403, "Token invalid");
     }
 
-    const accessToken = jwt.sign({ id }, ACCESS_SECRET_KEY, { expiresIn: "5s" });
+    const accessToken = jwt.sign({ id }, ACCESS_SECRET_KEY, { expiresIn: "5m" });
     const refreshToken = jwt.sign({ id }, REFRESH_SECRET_KEY, { expiresIn: "7d" });
 
     await User.findByIdAndUpdate(id, { accessToken, refreshToken });
