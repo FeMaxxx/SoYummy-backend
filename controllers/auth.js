@@ -54,7 +54,7 @@ const googleRedirect = async (req, res) => {
   const findUser = await User.findOne({ email: userData.data.email });
   if (findUser) {
     const accessToken = jwt.sign({ id: findUser._id }, ACCESS_SECRET_KEY, { expiresIn: "15m" });
-    const refreshToken = jwt.sign({ id: findUser._id }, REFRESH_SECRET_KEY, { expiresIn: "7d" });
+    const refreshToken = jwt.sign({ id: findUser._id }, REFRESH_SECRET_KEY, { expiresIn: "30d" });
     return res.redirect(
       `https://tsylepa.github.io/Yummy/googleRedirect?accessToken=${accessToken}&refreshToken=${refreshToken}`
     );
@@ -70,8 +70,8 @@ const googleRedirect = async (req, res) => {
     refreshToken: "",
   });
 
-  const accessToken = jwt.sign({ id: findUser._id }, ACCESS_SECRET_KEY, { expiresIn: "5m" });
-  const refreshToken = jwt.sign({ id: findUser._id }, REFRESH_SECRET_KEY, { expiresIn: "7d" });
+  const accessToken = jwt.sign({ id: findUser._id }, ACCESS_SECRET_KEY, { expiresIn: "15m" });
+  const refreshToken = jwt.sign({ id: findUser._id }, REFRESH_SECRET_KEY, { expiresIn: "30d" });
 
   await User.findByIdAndUpdate(newUSer._id, { accessToken, refreshToken });
 
@@ -108,7 +108,7 @@ const verifyEmail = async (req, res) => {
   }
 
   const accessToken = jwt.sign({ id: findUser._id }, ACCESS_SECRET_KEY, { expiresIn: "15m" });
-  const refreshToken = jwt.sign({ id: findUser._id }, REFRESH_SECRET_KEY, { expiresIn: "7d" });
+  const refreshToken = jwt.sign({ id: findUser._id }, REFRESH_SECRET_KEY, { expiresIn: "30d" });
   const user = await User.findByIdAndUpdate(
     findUser._id,
     { verifiedEmail: true, verificationCode: "", accessToken, refreshToken },
@@ -138,7 +138,7 @@ const login = async (req, res) => {
   }
 
   const accessToken = jwt.sign({ id: findUser._id }, ACCESS_SECRET_KEY, { expiresIn: "15m" });
-  const refreshToken = jwt.sign({ id: findUser._id }, REFRESH_SECRET_KEY, { expiresIn: "7d" });
+  const refreshToken = jwt.sign({ id: findUser._id }, REFRESH_SECRET_KEY, { expiresIn: "30d" });
   const user = await User.findByIdAndUpdate(
     findUser._id,
     { accessToken, refreshToken },
@@ -162,7 +162,7 @@ const refreshToken = async (req, res) => {
     }
 
     const accessToken = jwt.sign({ id }, ACCESS_SECRET_KEY, { expiresIn: "15m" });
-    const refreshToken = jwt.sign({ id }, REFRESH_SECRET_KEY, { expiresIn: "7d" });
+    const refreshToken = jwt.sign({ id }, REFRESH_SECRET_KEY, { expiresIn: "30d" });
 
     await User.findByIdAndUpdate(id, { accessToken, refreshToken });
 
